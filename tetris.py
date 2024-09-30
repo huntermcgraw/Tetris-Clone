@@ -23,13 +23,17 @@ if __name__ == "__main__":
     
     
     # Create the screen and set dimensions
-    x_width = 1000
-    y_width = 1000
+    x_width = 1056
+    y_width = 960
     screen = pygame.display.set_mode((x_width, y_width))
     screen.fill((20, 20, 20))
+    board_image = pygame.image.load('images/Background.png')
+
     
     # Set title
     pygame.display.set_caption("Tetris")
+    screen.blit(board_image, (0, 0))
+    pygame.display.update()
 
     # Visual representation of board for testing
     board = [[0 for _ in range(10)] for _ in range(24)]
