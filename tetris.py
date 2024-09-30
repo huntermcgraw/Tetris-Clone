@@ -36,7 +36,7 @@ if __name__ == "__main__":
     pygame.display.update()
 
     # Visual representation of board for testing
-    board = [[0 for _ in range(10)] for _ in range(24)]
+    board = [[0 for _ in range(10)] for _ in range(19)]
     for i in board:
         temp = ""
         for j in i:
