@@ -1,23 +1,25 @@
 import pygame
 import random
-# Time will be needed to shift the pieces over time since it will change consistently
 import time
 
 # Global variables
 # Unit is the size of the squares for mutating pieces
 UNIT = 48
 piece_list = []
-speed = 800
+SPEED = 800
+PIECE = ''
 
 def nextPiece():
     '''forgiving next piece algorithm that's used in modern games to prevent piece droughts. this
     makes sure each piece is used before sending duplicates furthest a duplicate can be is 13 pieces
     Chooses the next piece and returns the string variant'''
     global piece_list
+    global PIECE
     if not piece_list:
         piece_list = ['L', 'T', 'S', 'Z', 'I', 'O', 'J']
     random.shuffle(piece_list)
-    return piece_list.pop(0)
+    PIECE = piece_list.pop(0)
+    return PIECE
 
 def generatePiece(str,x_y=(10*UNIT,1*UNIT)):
     '''Creates the 4 tetris blocks from the string given from nextPiece. The first block is 
@@ -113,8 +115,8 @@ def holdPiece(arr):
 
 def updateDifficulty(line_clears):
     # change the difficulty based on amount of lines cleared
-    global speed
-    speed = 800
+    global SPEED
+    SPEED = 800
     
     return
 def dropCollisionCheck(arr,board):
@@ -139,23 +141,24 @@ def leftCollisionCheck(arr,board):
     return False
 
 def rotate(arr, direction):
-    master_x, master_y = getXY(arr[0])
-    for i in arr:
-        x, y = getXY(i)
-        x -= master_x
-        y -= master_y
-        if direction == "clockwise":
-            x1 = -y
-            y1 = x
-            i[0] = (x1 + master_x)*UNIT
-            i[1] = (y1 + master_y)*UNIT
-        else:
-            x1 = y
-            y1 = -x
-            i[0] = (x1 + master_x)*UNIT
-            i[1] = (y1 + master_y)*UNIT
-        # Ignore this code you didnt see it
-        i[0] += 4*UNIT
+    if PIECE != 'O':
+        master_x, master_y = getXY(arr[0])
+        for i in arr:
+            x, y = getXY(i)
+            x -= master_x
+            y -= master_y
+            if direction == "clockwise":
+                x1 = -y
+                y1 = x
+                i[0] = (x1 + master_x)*UNIT
+                i[1] = (y1 + master_y)*UNIT
+            else:
+                x1 = y
+                y1 = -x
+                i[0] = (x1 + master_x)*UNIT
+                i[1] = (y1 + master_y)*UNIT
+            # Ignore this code you didnt see it
+            i[0] += 4*UNIT
     return arr
     
 def getXY(unit):
@@ -208,7 +211,7 @@ if __name__ == "__main__":
     board = createBoard()
     
     # Timer for dropping blocks 
-    next_check = getNextCheck(speed)
+    next_check = getNextCheck(SPEED)
     
     # This is the 4 blocks that make up the tetris piece [x_coordinate, y_coordinate, colored picture]
     arr = generatePiece(nextPiece())
@@ -242,7 +245,7 @@ if __name__ == "__main__":
                     if "down" not in pressed:
                         if not dropCollisionCheck(arr,board):
                             dropPiece(arr)
-                            next_check = getNextCheck(speed)
+                            next_check = getNextCheck(SPEED)
                         pressed.append("down")
                 # Quick drops piece to bottom and immediately starts the next piece
                 elif event.key == pygame.K_UP:
@@ -292,7 +295,7 @@ if __name__ == "__main__":
                 arr = generatePiece(nextPiece())
             else:
                 dropPiece(arr)
-            next_check = getNextCheck(speed)
+            next_check = getNextCheck(SPEED)
         
         # Updates display to the screen
         pygame.display.update()
