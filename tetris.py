@@ -78,9 +78,31 @@ def stopPiece(arr, board):
     return board
 
 
-def checkLines():
+def checkLines(board):
     # clear lines add points and totals lines cleared
-    return
+    new_line = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+    # If the bottom row is empty all the rows have to be empty
+    if board[18] == new_line:
+        return board
+    for line in range(len(board)):
+        # If the row is empty, skip it
+        if board[line] != new_line:
+            length = 0
+            for column in board[line][2:]:
+                # Checks to see if every spot on the board is a piece
+                if type(column) is list:
+                    length += 1
+            # If every space in the line is a piece
+            if length == 10:
+                board.pop(line)  # Remove the line
+                board = [new_line] + board  # Add an empty line to the top of the board
+                for row in range(len(board)):
+                    for space in board[row][2:]:
+                        if row == new_line or row > line:  # Skips empty lines and lines below the cleared line
+                            break
+                        if type(space) is list:  # Moves everything down by one unit
+                            space[1] += UNIT
+    return board
 
 
 def rotationCollisionCheck():
@@ -227,7 +249,14 @@ if __name__ == "__main__":
                         dropPiece(current_piece)
                         next_check = getNextCheck(speed)
                 elif event.key == pygame.K_UP:
+                    while not dropCollisionCheck(current_piece, game_board):
+                        dropPiece(current_piece)
+                    stopPiece(current_piece, game_board)
+                    next_check = 0
+                elif event.key == pygame.K_x:
                     current_piece = rotate(current_piece, "clockwise")
+                elif event.key == pygame.K_z:
+                    current_piece = rotate(current_piece, "")
 
         # Display board
         screen.blit(board_image, (0, 0))
@@ -240,11 +269,10 @@ if __name__ == "__main__":
         if time.time() > next_check:
             if dropCollisionCheck(current_piece, game_board):
                 game_board = stopPiece(current_piece, game_board)
-                checkLines()
+                game_board = checkLines(game_board)
                 current_piece = generatePiece(nextPiece())
             else:
                 dropPiece(current_piece)
             next_check = getNextCheck(speed)
-        
         # Updates display to the screen
         pygame.display.update()
