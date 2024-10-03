@@ -1,7 +1,7 @@
 import pygame
 
 
-class Tetris_Piece:
+class TetrisPiece:
     def __init__(self, image_link) -> None:
         self.image = pygame.image.load(image_link)
         self.image_array = [
@@ -21,4 +21,4 @@ class Tetris_Piece:
         self.current = self.image_array[self.index]
 
 
-l_piece = Tetris_Piece("./images/L BLOCK.png")
+l_piece = TetrisPiece("./images/L BLOCK.png")
