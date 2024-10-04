@@ -169,7 +169,7 @@ def rotate(arr, direction):
 
 
 def getXY(unit):
-    x, y = int((unit[0]-160)/48), int((unit[1])/48)
+    x, y = int((unit[0]-192)/48), int((unit[1])/48)
     return x, y
 
 
@@ -204,12 +204,12 @@ if __name__ == "__main__":
     purple = pygame.image.load('images/Pixel.png')
     teal = pygame.image.load('images/Pixel.png')
     red.fill((255, 0, 0), special_flags=pygame.BLEND_MULT)
-    orange.fill((255, 165, 0), special_flags=pygame.BLEND_MULT)
+    orange.fill((255, 128, 0), special_flags=pygame.BLEND_MULT)
     yellow.fill((255, 255, 0), special_flags=pygame.BLEND_MULT)
-    green.fill((0, 150, 0), special_flags=pygame.BLEND_MULT)
+    green.fill((0, 255, 0), special_flags=pygame.BLEND_MULT)
     blue.fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
-    purple.fill((134, 1, 175), special_flags=pygame.BLEND_MULT)
-    teal.fill((64, 224, 208), special_flags=pygame.BLEND_MULT)
+    purple.fill((196, 0, 196), special_flags=pygame.BLEND_MULT)
+    teal.fill((0, 255, 255), special_flags=pygame.BLEND_MULT)
     
     # Set title
     pygame.display.set_caption("Tetris")
