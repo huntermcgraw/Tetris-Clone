@@ -169,7 +169,7 @@ def rotate(arr, direction):
 
 
 def getXY(unit):
-    x, y = int((unit[0]-192)/48), int((unit[1])/48)
+    x, y = int((unit[0]-160)/48), int((unit[1])/48)
     return x, y
 
 
