@@ -7,7 +7,7 @@ import time
 # Unit is the size of the squares for mutating pieces
 UNIT = 48
 piece_list = []
-speed = 800
+SPEED = 800
 
 
 def nextPiece():
@@ -118,8 +118,8 @@ def holdPiece(arr):
 
 def updateDifficulty(line_clears):
     # change the difficulty based on amount of lines cleared
-    global speed
-    speed = 800
+    global SPEED
+    SPEED = 800
     
     return
 
@@ -221,7 +221,7 @@ if __name__ == "__main__":
     game_board = createBoard()
     
     # Timer for dropping blocks 
-    next_check = getNextCheck(speed)
+    next_check = getNextCheck(SPEED)
     
     # This is the 4 blocks that make up the tetris piece [x_coordinate, y_coordinate, colored picture]
     current_piece = generatePiece(nextPiece())
@@ -247,16 +247,19 @@ if __name__ == "__main__":
                 elif event.key == pygame.K_DOWN:
                     if not dropCollisionCheck(current_piece, game_board):
                         dropPiece(current_piece)
-                        next_check = getNextCheck(speed)
+                        next_check = getNextCheck(SPEED)
+                # Quick drops piece to bottom and immediately starts the next piece
                 elif event.key == pygame.K_UP:
-                    while not dropCollisionCheck(current_piece, game_board):
+                    while not dropCollisionCheck(current_piece,game_board):
                         dropPiece(current_piece)
-                    stopPiece(current_piece, game_board)
+                    stopPiece(current_piece,game_board)
                     next_check = 0
+                # Rotates the piece clockwise 
                 elif event.key == pygame.K_x:
-                    current_piece = rotate(current_piece, "clockwise")
+                    current_piece = rotate(current_piece,"clockwise")
+                # Rotates the piece counter-clockwise
                 elif event.key == pygame.K_z:
-                    current_piece = rotate(current_piece, "")
+                    current_piece = rotate(current_piece,"counter-clockwise")
 
         # Display board
         screen.blit(board_image, (0, 0))
@@ -273,6 +276,7 @@ if __name__ == "__main__":
                 current_piece = generatePiece(nextPiece())
             else:
                 dropPiece(current_piece)
-            next_check = getNextCheck(speed)
+            next_check = getNextCheck(SPEED)
+        
         # Updates display to the screen
         pygame.display.update()
