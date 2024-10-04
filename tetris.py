@@ -174,7 +174,7 @@ if __name__ == "__main__":
     
     # Create the screen and set dimensions
     x_width = 1056
-    y_width = 960
+    y_width = 600
     screen = pygame.display.set_mode((x_width, y_width))
     board_image = pygame.image.load('images/Background.png')
     pixel = pygame.image.load('images/Pixel.png')
@@ -232,7 +232,16 @@ if __name__ == "__main__":
                         next_check = getNextCheck(SPEED)
                 # Quick drops piece to bottom and immediately starts the next piece
                 elif event.key == pygame.K_UP:
-                    current_piece = rotate(current_piece, "clockwise")
+                    while not dropCollisionCheck(current_piece,game_board):
+                        dropPiece(current_piece)
+                    stopPiece(current_piece,game_board)
+                    next_check = 0
+                # Rotates the piece clockwise 
+                elif event.key == pygame.K_x:
+                    current_piece = rotate(current_piece,"clockwise")
+                # Rotates the piece counter-clockwise
+                elif event.key == pygame.K_z:
+                    current_piece = rotate(current_piece,"counter-clockwise")
 
         # Display board
         screen.blit(board_image, (0, 0))
