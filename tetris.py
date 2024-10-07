@@ -236,30 +236,33 @@ if __name__ == "__main__":
             # This section executes each command on button press and not again until they are released
             if event.type == pygame.KEYDOWN:
                 # Moves piece to right if possible
-                if event.key == pygame.K_RIGHT:
+                if event.key in [pygame.K_RIGHT, pygame.K_d]:
                     if not rightCollisionCheck(current_piece, game_board):
                         movePiece(current_piece, "right")
                 # Moves piece to left if possible
-                elif event.key == pygame.K_LEFT:
+                elif event.key in [pygame.K_LEFT, pygame.K_a]:
                     if not leftCollisionCheck(current_piece, game_board):
                         movePiece(current_piece, "left")
                 # Moves piece down if possible and resets drop timer
-                elif event.key == pygame.K_DOWN:
+                elif event.key in [pygame.K_DOWN, pygame.K_s]:
                     if not dropCollisionCheck(current_piece, game_board):
                         dropPiece(current_piece)
                         next_check = getNextCheck(SPEED)
                 # Quick drops piece to bottom and immediately starts the next piece
-                elif event.key == pygame.K_UP:
-                    while not dropCollisionCheck(current_piece,game_board):
+                elif event.key in [pygame.K_SPACE]:
+                    while not dropCollisionCheck(current_piece, game_board):
                         dropPiece(current_piece)
-                    stopPiece(current_piece,game_board)
+                    stopPiece(current_piece, game_board)
                     next_check = 0
                 # Rotates the piece clockwise 
-                elif event.key == pygame.K_x:
-                    current_piece = rotate(current_piece,"clockwise")
+                elif event.key in [pygame.K_x, pygame.K_UP]:
+                    current_piece = rotate(current_piece, "clockwise")
                 # Rotates the piece counter-clockwise
-                elif event.key == pygame.K_z:
-                    current_piece = rotate(current_piece,"counter-clockwise")
+                elif event.key in [pygame.K_z, pygame.K_RCTRL, pygame.K_LCTRL]:
+                    current_piece = rotate(current_piece, "counter-clockwise")
+                # Holds the current piece
+                # elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT, pygame.K_c]:
+                #    holdPiece()
 
         # Display board
         screen.blit(board_image, (0, 0))
