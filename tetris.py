@@ -147,8 +147,33 @@ def leftCollisionCheck(arr, board):
             return True
     return False
 
+def rightCollisionRotationCheck(arr, board):
+    for i in arr:
+        x, y = getXY(i)
+        try:
+            if board[y][x] != 0:
+                return True
+        except:
+            return True
+    return False
+
+
+def leftCollisionRotationCheck(arr, board):
+    for i in arr:
+        x, y = getXY(i)
+        try:
+            if board[y][x] != 0:
+                return True
+        except:
+            return False
+    return False
 
 def rotate(arr, direction):
+
+    # If it's the square piece, don't rotate.
+    if (arr[0][0] == arr[1][0] and arr[2][0] == arr[3][0]) and (arr[0][1] == arr[2][1] and arr[1][1] == arr[3][1]):
+        return arr
+
     master_x, master_y = getXY(arr[0])
     for i in arr:
         x, y = getXY(i)
@@ -165,6 +190,10 @@ def rotate(arr, direction):
             i[0] = (x1 + master_x)*UNIT
             i[1] = (y1 + master_y)*UNIT
         i[0] += 4*UNIT
+    while leftCollisionRotationCheck(arr, game_board):
+        movePiece(arr, "right")
+    while rightCollisionRotationCheck(arr, game_board):
+        movePiece(arr, "left")
     return arr
 
 
