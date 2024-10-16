@@ -235,7 +235,9 @@ def rotate(arr, direction):
             i[0] = (x1 + master_x) * UNIT
             i[1] = (y1 + master_y) * UNIT
         i[0] += 4 * UNIT
-    if leftCollisionCheck(arr, game_board) and rightCollisionCheck(arr, game_board):
+    if leftCollisionRotationCheck(arr, game_board) and rightCollisionRotationCheck(
+        arr, game_board
+    ):
         return array_prev
     while leftCollisionRotationCheck(arr, game_board):
         movePiece(arr, "right")
