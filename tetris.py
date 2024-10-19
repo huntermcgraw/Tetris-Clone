@@ -117,9 +117,6 @@ def stopPiece(arr, board):
 def checkLines(board):
     # clear lines add points and totals lines cleared
     new_line = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-    # If the bottom row is empty all the rows have to be empty
-    if board[18] == new_line:
-        return board
     for line in range(len(board)):
         # If the row is empty, skip it
         if board[line] != new_line:
@@ -131,12 +128,10 @@ def checkLines(board):
             # If every space in the line is a piece
             if length == 10:
                 board.pop(line)  # Remove the line
-                board = [new_line] + board  # Add an empty line to the top of the board
+                board.insert(0, new_line.copy())  # Add an empty line to the top of the board
                 for row in range(len(board)):
                     for space in board[row][2:]:
-                        if (
-                            row == new_line or row > line
-                        ):  # Skips empty lines and lines below the cleared line
+                        if row > line:  # Skips empty lines and lines below the cleared line
                             break
                         if type(space) is list:  # Moves everything down by one unit
                             space[1] += UNIT
