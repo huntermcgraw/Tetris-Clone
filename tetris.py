@@ -1,9 +1,9 @@
-import pygame
 import random
 
 # Time will be needed to shift the pieces over time since it will change consistently
 import time
 
+import pygame
 # Global variables
 # Unit is the size of the squares for mutating pieces
 UNIT = 48
@@ -25,6 +25,20 @@ def nextPiece():
 def generatePiece(piece_name, x=(11 * UNIT), y=(1 * UNIT)):
     # Creates the 4 tetris blocks from the string given from nextPiece. The first block is
     # the "home block" this is the piece logic and rotations are based around
+    red = pygame.image.load("images/Pixel.png")
+    orange = pygame.image.load("images/Pixel.png")
+    yellow = pygame.image.load("images/Pixel.png")
+    green = pygame.image.load("images/Pixel.png")
+    blue = pygame.image.load("images/Pixel.png")
+    purple = pygame.image.load("images/Pixel.png")
+    teal = pygame.image.load("images/Pixel.png")
+    red.fill((255, 0, 0), special_flags=pygame.BLEND_MULT)
+    orange.fill((255, 128, 0), special_flags=pygame.BLEND_MULT)
+    yellow.fill((255, 255, 0), special_flags=pygame.BLEND_MULT)
+    green.fill((0, 255, 0), special_flags=pygame.BLEND_MULT)
+    blue.fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
+    purple.fill((196, 0, 196), special_flags=pygame.BLEND_MULT)
+    teal.fill((0, 255, 255), special_flags=pygame.BLEND_MULT)
     key = {
         "L": [
             [x, y, orange],
@@ -117,6 +131,9 @@ def stopPiece(arr, board):
 def checkLines(board):
     # clear lines add points and totals lines cleared
     new_line = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+    # If the bottom row is empty all the rows have to be empty
+    if board[18] == new_line:
+        return board
     for line in range(len(board)):
         # If the row is empty, skip it
         if board[line] != new_line:
@@ -187,7 +204,7 @@ def rightCollisionRotationCheck(arr, board):
         try:
             if board[y][x] != 0:
                 return True
-        except:
+        except IndexError:
             return True
     return False
 
@@ -198,12 +215,12 @@ def leftCollisionRotationCheck(arr, board):
         try:
             if board[y][x] != 0:
                 return True
-        except:
-            return False
+        except IndexError:
+            return True
     return False
 
 
-def rotate(arr, direction):
+def rotate(arr, direction, board):
 
     # If it's the square piece, don't rotate.
     if (arr[0][0] == arr[1][0] and arr[2][0] == arr[3][0]) and (
@@ -230,13 +247,11 @@ def rotate(arr, direction):
             i[0] = (x1 + master_x) * UNIT
             i[1] = (y1 + master_y) * UNIT
         i[0] += 4 * UNIT
-    if leftCollisionRotationCheck(arr, game_board) and rightCollisionRotationCheck(
-        arr, game_board
-    ):
+    if leftCollisionRotationCheck(arr, board) and rightCollisionRotationCheck(arr, board):
         return array_prev
-    while leftCollisionRotationCheck(arr, game_board):
+    while leftCollisionRotationCheck(arr, board):
         movePiece(arr, "right")
-    while rightCollisionRotationCheck(arr, game_board):
+    while rightCollisionRotationCheck(arr, board):
         movePiece(arr, "left")
     return arr
 
@@ -246,16 +261,16 @@ def getXY(unit):
     return x, y
 
 
-def displayPiece(arr):
+def displayPiece(arr, display_screen):
     for i in arr:
-        screen.blit(i[2], (i[0], i[1]))
+        display_screen.blit(i[2], (i[0], i[1]))
 
 
-def displayBoard(board):
+def displayBoard(board, display_screen):
     for i in board:
         for j in i:
             if j != 0 and j != 1:
-                screen.blit(j[2], (j[0], j[1]))
+                display_screen.blit(j[2], (j[0], j[1]))
 
 
 if __name__ == "__main__":
@@ -268,21 +283,6 @@ if __name__ == "__main__":
     y_width = 960
     screen = pygame.display.set_mode((x_width, y_width))
     board_image = pygame.image.load("images/Background.png")
-    pixel = pygame.image.load("images/Pixel.png")
-    red = pygame.image.load("images/Pixel.png")
-    orange = pygame.image.load("images/Pixel.png")
-    yellow = pygame.image.load("images/Pixel.png")
-    green = pygame.image.load("images/Pixel.png")
-    blue = pygame.image.load("images/Pixel.png")
-    purple = pygame.image.load("images/Pixel.png")
-    teal = pygame.image.load("images/Pixel.png")
-    red.fill((255, 0, 0), special_flags=pygame.BLEND_MULT)
-    orange.fill((255, 128, 0), special_flags=pygame.BLEND_MULT)
-    yellow.fill((255, 255, 0), special_flags=pygame.BLEND_MULT)
-    green.fill((0, 255, 0), special_flags=pygame.BLEND_MULT)
-    blue.fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
-    purple.fill((196, 0, 196), special_flags=pygame.BLEND_MULT)
-    teal.fill((0, 255, 255), special_flags=pygame.BLEND_MULT)
 
     # Set title
     pygame.display.set_caption("Tetris")
@@ -329,10 +329,10 @@ if __name__ == "__main__":
                     next_check = 0
                 # Rotates the piece clockwise
                 elif event.key in [pygame.K_x, pygame.K_UP]:
-                    current_piece = rotate(current_piece, "clockwise")
+                    current_piece = rotate(current_piece, "clockwise", game_board)
                 # Rotates the piece counter-clockwise
                 elif event.key in [pygame.K_z, pygame.K_RCTRL, pygame.K_LCTRL]:
-                    current_piece = rotate(current_piece, "counter-clockwise")
+                    current_piece = rotate(current_piece, "counter-clockwise", game_board)
                 # Holds the current piece
                 # elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT, pygame.K_c]:
                 #    holdPiece()
@@ -340,9 +340,9 @@ if __name__ == "__main__":
         # Display board
         screen.blit(board_image, (0, 0))
         # Display current piece
-        displayPiece(current_piece)
+        displayPiece(current_piece, screen)
         # Display all remaining pieces
-        displayBoard(game_board)
+        displayBoard(game_board, screen)
 
         # Determines when the piece drops and drops or locks piece if something is below
         if time.time() > next_check:
