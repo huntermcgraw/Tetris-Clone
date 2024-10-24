@@ -4,8 +4,8 @@
 import random
 import time
 import pygame
-
 UNIT = 48
+global piece_list
 piece_list = []
 SPEED = 800
 red = pygame.image.load("images/Pixel.png")
@@ -29,13 +29,14 @@ def next_piece():
         Parameters: (none)
     """
     global piece_list
+    print(piece_list)
     if not piece_list:
         piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
-    random.shuffle(piece_list)
+        random.shuffle(piece_list)
     return piece_list.pop(0)
 
 
-def generate_piece(piece_name=next_piece(), x=11 * UNIT, y=1 * UNIT):
+def generate_piece(piece_name ="O", x=11 * UNIT, y=1 * UNIT):
     """
         Takes a piece from next_piece or a piece from the user and generates the components 
         at the disired locations for that piece. Can also get prompted with x,y to change the 
@@ -199,13 +200,11 @@ def hold_piece(arr):
 
 
 def update_difficulty(line_clears):
+    pass
     """
         lowers the speed value if the lines cleared reaches the threshold
         line_clears (int): how many lines were cleared
     """
-    global SPEED
-    SPEED = 800
-
     return
 
 
@@ -445,7 +444,7 @@ if __name__ == "__main__":
             if drop_collision_check(current_piece, game_board):
                 game_board = stop_piece(current_piece, game_board)
                 game_board = check_lines(game_board)
-                current_piece = generate_piece()
+                current_piece = generate_piece(next_piece())
                 if drop_collision_check(current_piece, game_board):
                     game_board = create_board()
             else:
