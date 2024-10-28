@@ -5,7 +5,6 @@ import random
 import time
 import pygame
 UNIT = 48
-global piece_list
 piece_list = []
 SPEED = 800
 red = pygame.image.load("images/Pixel.png")
@@ -23,27 +22,27 @@ blue.fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
 purple.fill((196, 0, 196), special_flags=pygame.BLEND_MULT)
 teal.fill((0, 255, 255), special_flags=pygame.BLEND_MULT)
 
+
 def next_piece():
     """
         Determines the next piece to use. uses traditional tetris algorithm to prevent droughts:
         Parameters: (none)
     """
     global piece_list
-    print(piece_list)
     if not piece_list:
         piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
         random.shuffle(piece_list)
     return piece_list.pop(0)
 
 
-def generate_piece(piece_name ="O", x=11 * UNIT, y=1 * UNIT):
+def generate_piece(piece_name="O", x=11 * UNIT, y=1 * UNIT):
     """
-        Takes a piece from next_piece or a piece from the user and generates the components 
-        at the disired locations for that piece. Can also get prompted with x,y to change the 
+        Takes a piece from next_piece or a piece from the user and generates the components
+        at the desired locations for that piece. Can also get prompted with x,y to change the
         starting position of the home piece.
         Parameters:
         piece_name (str): one of these strings ["L", "T", "S", "Z", "I", "O", "J"]
-        x (int): the position in pixels of the x coordinate 
+        x (int): the position in pixels of the x coordinate
         y (int): the position in pixels of the y coordinate
     """
     key = {
@@ -101,8 +100,7 @@ def get_next_check(interval):
     """
     interval /= 1000
     current_time = time.time()
-    next_check = current_time + interval
-    return next_check
+    return current_time + interval
 
 
 def drop_piece(arr):
@@ -174,7 +172,7 @@ def check_lines(board):
             length = 0
             for column in board[line][2:]:
                 # Checks to see if every spot on the board is a piece
-                if isinstance(column,list):
+                if isinstance(column, list):
                     length += 1
             # If every space in the line is a piece
             if length == 10:
@@ -286,7 +284,7 @@ def left_collision_rotation_check(arr, board):
 
 def rotate(arr, direction, board):
     """
-        rotates the piece by doing reflections over y=x and y=-x respective to 
+        rotates the piece by doing reflections over y=x and y=-x respective to
         the direction does not care about collision
         Parameters:
         arr (arr[arr[int]]): The current piece
@@ -330,7 +328,7 @@ def rotate(arr, direction, board):
 
 def get_x_y(unit):
     """
-        retrieves the x and y coordinate from the posion on screen. this is where 
+        retrieves the x and y coordinate from the position on screen. this is where
         they are on the board array
         Parameters:
         unit (list[x(int),y(int),color]): the color is a pygame image that is displayed with a tint
@@ -341,7 +339,7 @@ def get_x_y(unit):
 
 def display_piece(arr, display_screen):
     """
-        prints the game piece to the board this is seperate from the board array and 
+        prints the game piece to the board this is separate from the board array and
         is not contained in the array
         this function displays the current piece over the board.
         Parameters:
@@ -445,6 +443,7 @@ if __name__ == "__main__":
                 game_board = stop_piece(current_piece, game_board)
                 game_board = check_lines(game_board)
                 current_piece = generate_piece(next_piece())
+                # Clears Board when cannot place another piece
                 if drop_collision_check(current_piece, game_board):
                     game_board = create_board()
             else:
