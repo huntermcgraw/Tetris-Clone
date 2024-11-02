@@ -7,7 +7,7 @@ import pygame
 UNIT = 48
 global piece_list
 piece_list = []
-SPEED = 800
+speed = 800
 red = pygame.image.load("images/Pixel.png")
 orange = pygame.image.load("images/Pixel.png")
 yellow = pygame.image.load("images/Pixel.png")
@@ -29,14 +29,13 @@ def next_piece():
         Parameters: (none)
     """
     global piece_list
-    print(piece_list)
     if not piece_list:
-        piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
+        piece_list = ["I"]
         random.shuffle(piece_list)
     return piece_list.pop(0)
 
 
-def generate_piece(piece_name ="O", x=11 * UNIT, y=1 * UNIT):
+def generate_piece(piece_name ="O", x=10 * UNIT, y=1 * UNIT):
     """
         Takes a piece from next_piece or a piece from the user and generates the components 
         at the disired locations for that piece. Can also get prompted with x,y to change the 
@@ -49,9 +48,9 @@ def generate_piece(piece_name ="O", x=11 * UNIT, y=1 * UNIT):
     key = {
         "L": [
             [x, y, orange],
-            [x, y - UNIT, orange],
-            [x, y + UNIT, orange],
-            [x + UNIT, y + UNIT, orange],
+            [x - UNIT, y, orange],
+            [x + UNIT, y, orange],
+            [x + UNIT, y - UNIT, orange],
         ],
         "T": [
             [x, y, purple],
@@ -63,19 +62,19 @@ def generate_piece(piece_name ="O", x=11 * UNIT, y=1 * UNIT):
             [x, y, red],
             [x, y - UNIT, red],
             [x + UNIT, y, red],
-            [x + UNIT, y + UNIT, red],
+            [x - UNIT, y - UNIT, red],
         ],
         "S": [
-            [x + UNIT, y, green],
-            [x + UNIT, y - UNIT, green],
             [x, y, green],
-            [x, y + UNIT, green],
+            [x, y - UNIT, green],
+            [x + UNIT, y - UNIT, green],
+            [x - UNIT, y, green],
         ],
         "I": [
             [x, y, teal],
-            [x, y - UNIT, teal],
-            [x, y + UNIT, teal],
-            [x, y + UNIT * 2, teal],
+            [x - UNIT, y, teal],
+            [x + UNIT, y, teal],
+            [x + UNIT * 2, y, teal],
         ],
         "O": [
             [x, y, yellow],
@@ -84,13 +83,18 @@ def generate_piece(piece_name ="O", x=11 * UNIT, y=1 * UNIT):
             [x + UNIT, y - UNIT, yellow],
         ],
         "J": [
+            [x, y, blue],
             [x + UNIT, y, blue],
-            [x + UNIT, y - UNIT, blue],
-            [x + UNIT, y + UNIT, blue],
-            [x, y + UNIT, blue],
+            [x - UNIT, y - UNIT, blue],
+            [x - UNIT, y, blue],
         ],
     }
-    return key[piece_name]
+    current_piece_rotations = 0
+    rotations = random.randint(0,3)
+    piece = key[piece_name]
+    for i in range(rotations):
+        piece, current_piece_rotations = rotate(piece, "clockwise", game_board, current_piece_rotations)
+    return piece, rotations
 
 
 def get_next_check(interval):
@@ -150,7 +154,6 @@ def stop_piece(arr, board):
         arr (arr[arr[int]]): The current piece
         board (arr[arr[int]]): The game board
     """
-    # This adds the piece to the board so the arr can be used for the next piece
     for i in arr:
         x, y = get_x_y(i)
         board[y][x] = i
@@ -158,6 +161,7 @@ def stop_piece(arr, board):
 
 
 def check_lines(board):
+    count = 0
     """
         checks for full lines, clears them, and moves above rows down
         Parameters:
@@ -179,6 +183,7 @@ def check_lines(board):
             # If every space in the line is a piece
             if length == 10:
                 board.pop(line)  # Remove the line
+                count += 1
                 board.insert(0, new_line.copy())  # Add an empty line to the top of the board
                 for row, _ in enumerate(board):
                     for space in board[row][2:]:
@@ -186,26 +191,7 @@ def check_lines(board):
                             break
                         if isinstance(space, list):  # Moves everything down by one unit
                             space[1] += UNIT
-    return board
-
-
-def hold_piece(arr):
-    """
-        Should hold the current piece and either take out a new piece or the current held piece
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-    """
-    # move the piece out of the game board and move the piece on hold back to the top if possible
-    return
-
-
-def update_difficulty(line_clears):
-    pass
-    """
-        lowers the speed value if the lines cleared reaches the threshold
-        line_clears (int): how many lines were cleared
-    """
-    return
+    return board,count
 
 
 def drop_collision_check(arr, board):
@@ -250,24 +236,7 @@ def left_collision_check(arr, board):
     return False
 
 
-def right_collision_rotation_check(arr, board):
-    """
-        Checks to see if the piece can rotate right without collision with border or other blocks
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        board (arr[arr[int]]): The game board
-    """
-    for i in arr:
-        x, y = get_x_y(i)
-        try:
-            if board[y][x] != 0:
-                return True
-        except IndexError:
-            return True
-    return False
-
-
-def left_collision_rotation_check(arr, board):
+def review_check(arr, board):
     """
         Checks to see if the piece can rotate left without collision with border or other blocks
         Parameters:
@@ -284,7 +253,7 @@ def left_collision_rotation_check(arr, board):
     return False
 
 
-def rotate(arr, direction, board):
+def rotate(arr, direction, board, rotations):
     """
         rotates the piece by doing reflections over y=x and y=-x respective to 
         the direction does not care about collision
@@ -293,15 +262,11 @@ def rotate(arr, direction, board):
         direction (string): clockwise or counterclockwise for direction
         board (arr[arr[int]]): The game board
     """
-
-    # If it's the square piece, don't rotate.
+    # excludes the O piece
     if (arr[0][0] == arr[1][0] and arr[2][0] == arr[3][0]) and (
-        arr[0][1] == arr[2][1] and arr[1][1] == arr[3][1]
-    ):
-        return arr
-
+        arr[0][1] == arr[2][1] and arr[1][1] == arr[3][1]):
+        return arr, rotations
     array_prev = []
-
     master_x, master_y = get_x_y(arr[0])
     for i in arr:
         array_prev.append(i.copy())
@@ -319,18 +284,240 @@ def rotate(arr, direction, board):
             i[0] = (x1 + master_x) * UNIT
             i[1] = (y1 + master_y) * UNIT
         i[0] += 4 * UNIT
-    if left_collision_rotation_check(arr, board) and right_collision_rotation_check(arr, board):
-        return array_prev
-    while left_collision_rotation_check(arr, board):
-        move_piece(arr, "right")
-    while right_collision_rotation_check(arr, board):
-        move_piece(arr, "left")
-    return arr
+        
+    # change rotations
+    if direction == "clockwise":
+        final_rotation = (1 + rotations) % 4
+    else:
+        final_rotation = (-1 + rotations) % 4
+    # seperate I piece logic
+    if (arr[0][0] == arr[1][0] and arr[1][0] == arr[2][0] and 
+        arr[2][0] == arr[3][0]) or (arr[0][1] == arr[1][1] and arr[1][1] == arr[2][1] and 
+        arr[2][1] == arr[3][1]):
+        # base check for ["I"]
+        if direction == "clockwise":
+            if rotations == 0: 
+                for i in arr:
+                    i[0] += 1 * UNIT
+            elif rotations == 2:
+                for i in arr:
+                    i[0] -= 1 * UNIT
+            if rotations == 1: 
+                for i in arr:
+                    i[1] += 1 * UNIT
+            elif rotations == 3:
+                for i in arr:
+                    i[1] -= 1 * UNIT
+        else:
+            if rotations == 3: 
+                for i in arr:
+                    i[0] += 1 * UNIT
+            elif rotations == 1:
+                for i in arr:
+                    i[0] -= 1 * UNIT
+            if rotations == 0: 
+                for i in arr:
+                    i[1] += 1 * UNIT
+            elif rotations == 2:
+                for i in arr:
+                    i[1] -= 1 * UNIT
+        if not review_check(arr, board):
+            return arr, final_rotation
+        # second check
+        if direction == "clockwise":
+            if rotations == 0: 
+                for i in arr:
+                    i[0] -= 2 * UNIT
+            elif rotations == 1:
+                for i in arr:
+                    i[0] -= 1 * UNIT
+            elif rotations == 2:
+                for i in arr:
+                    i[0] += 2 * UNIT
+            elif rotations == 3:
+                for i in arr:
+                    i[0] += 1 * UNIT
+        else:
+            if rotations == 0: 
+                for i in arr:
+                    i[0] -= 1 * UNIT
+            elif rotations == 1:
+                for i in arr:
+                    i[0] += 2 * UNIT
+            elif rotations == 2:
+                for i in arr:
+                    i[0] += 1 * UNIT
+            elif rotations == 3:
+                for i in arr:
+                    i[0] -= 2 * UNIT
+        if not review_check(arr, board):
+            return arr, final_rotation 
+        # third check
+        if direction == "clockwise":
+            if rotations == 0 or rotations == 1:
+                for i in arr:
+                    i[0] += 3 * UNIT
+            else:
+                for i in arr:
+                    i[0] -= 3 * UNIT
+        else:
+            if rotations == 1 or rotations == 2:
+                for i in arr:
+                    i[0] -= 3 * UNIT
+            else:
+                for i in arr:
+                    i[0] += 3 * UNIT
+            return arr, final_rotation
+        if not review_check(arr, board):
+            return arr, final_rotation 
+        # fourth check
+        if direction == "clockwise":
+            if rotations == 0 or rotations == 1:
+                for i in arr:
+                    i[0] -= 3 * UNIT
+            else:
+                for i in arr:
+                    i[0] += 3 * UNIT
+        else:
+            if rotations == 1 or rotations == 2:
+                for i in arr:
+                    i[0] += 3 * UNIT
+            else:
+                for i in arr:
+                    i[0] -= 3 * UNIT
+        if direction == "clockwise":
+            if rotations == 0: 
+                for i in arr:
+                    i[1] += 1 * UNIT
+            elif rotations == 1:
+                for i in arr:
+                    i[1] -= 2 * UNIT
+            elif rotations == 2:
+                for i in arr:
+                    i[1] -= 1 * UNIT
+            elif rotations == 3:
+                for i in arr:
+                    i[1] += 2 * UNIT
+        else:
+            if rotations == 0: 
+                for i in arr:
+                    i[1] -= 2 * UNIT
+            elif rotations == 1:
+                for i in arr:
+                    i[1] -= 1 * UNIT
+            elif rotations == 2:
+                for i in arr:
+                    i[1] += 2 * UNIT
+            elif rotations == 3:
+                for i in arr:
+                    i[1] += 1 * UNIT
+        if not review_check(arr, board):
+            return arr, final_rotation
+        # fifth check
+        if direction == "clockwise":
+            if rotations == 0 or rotations == 1:
+                for i in arr:
+                    i[0] += 3 * UNIT
+            else:
+                for i in arr:
+                    i[0] -= 3 * UNIT
+            if rotations == 0 or rotations == 3:
+                for i in arr:
+                    i[1] -= 3 * UNIT
+            else:
+                for i in arr:
+                    i[1] += 3 * UNIT
+        else:
+            if rotations == 1 or rotations == 2:
+                for i in arr:
+                    i[0] += 3 * UNIT
+            else:
+                for i in arr:
+                    i[0] -= 3 * UNIT
+            if rotations == 0 or rotations == 1:
+                for i in arr:
+                    i[1] += 3 * UNIT
+            else:
+                for i in arr:
+                    i[1] -= 3 * UNIT
+        if not review_check(arr, board):
+            return arr, final_rotation
+        return array_prev, rotations
+    # base check for ["L", "T", "S", "Z", "J"]
+    if not review_check(arr, board):
+        return arr, final_rotation 
+    # second check
+    if direction == "clockwise":
+        if rotations == 0 or rotations == 3:
+            for i in arr:
+                i[0] -= 1 * UNIT
+        else:
+            for i in arr:
+                i[0] += 1 * UNIT
+    else:
+        if rotations == 0 or rotations == 1:
+            for i in arr:
+                i[0] += 1 * UNIT
+        else:
+            for i in arr:
+                i[0] -= 1 * UNIT
+    if not review_check(arr, board):
+        return arr, final_rotation
+    # third check
+    if rotations == 0 or rotations == 2:
+        for i in arr:
+            i[1] -= 1 * UNIT
+    else:
+        for i in arr:
+            i[1] += 1 * UNIT
+    if not review_check(arr, board):
+        return arr, final_rotation
+    # fourth check
+    if rotations == 0 or rotations == 2:
+        for i in arr:
+            i[1] += 3 * UNIT
+    else:
+        for i in arr:
+            i[1] -= 3 * UNIT
+    if direction == "clockwise":
+        if rotations == 0 or rotations == 3:
+            for i in arr:
+                i[0] += 1 * UNIT
+        else:
+            for i in arr:
+                i[0] -= 1 * UNIT
+    else:
+        if rotations == 0 or rotations == 1:
+            for i in arr:
+                i[0] -= 1 * UNIT
+        else:
+            for i in arr:
+                i[0] += 1 * UNIT
+    if not review_check(arr, board):
+        return arr, final_rotation
+    # fifth check
+    if direction == "clockwise":
+        if rotations == 0 or rotations == 3:
+            for i in arr:
+                i[0] -= 1 * UNIT
+        else:
+            for i in arr:
+                i[0] += 1 * UNIT
+    else:
+        if rotations == 0 or rotations == 1:
+            for i in arr:
+                i[0] += 1 * UNIT
+        else:
+            for i in arr:
+                i[0] -= 1 * UNIT
+    if not review_check(arr, board):
+        return arr, final_rotation
+    return array_prev, rotations
 
 
 def get_x_y(unit):
     """
-        retrieves the x and y coordinate from the posion on screen. this is where 
+        retrieves the x and y coordinate from the position on screen. this is where 
         they are on the board array
         Parameters:
         unit (list[x(int),y(int),color]): the color is a pygame image that is displayed with a tint
@@ -341,7 +528,7 @@ def get_x_y(unit):
 
 def display_piece(arr, display_screen):
     """
-        prints the game piece to the board this is seperate from the board array and 
+        prints the game piece to the board this is separate from the board array and 
         is not contained in the array
         this function displays the current piece over the board.
         Parameters:
@@ -365,17 +552,33 @@ def display_board(board, display_screen):
                 display_screen.blit(j[2], (j[0], j[1]))
 
 
+def update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed):
+    """updates score according to lines cleared and updates drop piece speed by total lines cleared"""
+    if lines == 1:
+        score += 100
+        btb_tetris = False
+    elif lines == 2:
+        score += 300
+        btb_tetris = False
+    elif lines == 3:
+        score += 500
+        btb_tetris = False
+    elif lines == 4:
+        score += 800 + btb_tetris * 400
+        btb_tetris = True
+    if cleared_lines > 1:
+        speed = 800
+    return score, speed, btb_tetris
+    
+    
 if __name__ == "__main__":
-
     # Initialize pygame
     pygame.init()
-
     # Create the screen and set dimensions
     X_WIDTH = 1056
     Y_WIDTH = 960
     screen = pygame.display.set_mode((X_WIDTH, Y_WIDTH))
     board_image = pygame.image.load("images/Background.png")
-
     # Set title
     pygame.display.set_caption("Tetris")
 
@@ -387,12 +590,19 @@ if __name__ == "__main__":
     game_board = create_board()
 
     # Timer for dropping blocks
-    next_check = get_next_check(SPEED)
-
+    next_check = get_next_check(speed)
     # This is the 4 blocks that make up the tetris piece
     # [x_coordinate, y_coordinate, colored picture]
-    current_piece = generate_piece()
-
+    piece_letter = next_piece()
+    current_piece, current_piece_rotations = generate_piece(piece_letter)
+    held_piece = None
+    held_used = False
+    cleared_lines = 0
+    score = 0
+    btb_tetris = False
+    piece_stop_check = 0
+    piece_stop_delay = speed # set to speed initially
+    piece_down_colliding = True 
     # Main game loop
     RUNNING = True
     while RUNNING:
@@ -415,41 +625,67 @@ if __name__ == "__main__":
                 elif event.key in [pygame.K_DOWN, pygame.K_s]:
                     if not drop_collision_check(current_piece, game_board):
                         drop_piece(current_piece)
-                        next_check = get_next_check(SPEED)
+                        next_check = get_next_check(speed)
+                        score += 1
                 # Quick drops piece to bottom and immediately starts the next piece
                 elif event.key in [pygame.K_SPACE]:
                     while not drop_collision_check(current_piece, game_board):
                         drop_piece(current_piece)
+                        score+=2
+                    piece_stop_check = 0
+                    piece_down_colliding = False
                     stop_piece(current_piece, game_board)
-                    next_check = 0
+                    next_check = get_next_check(speed)
                 # Rotates the piece clockwise
                 elif event.key in [pygame.K_x, pygame.K_UP]:
-                    current_piece = rotate(current_piece, "clockwise", game_board)
+                    current_piece, current_piece_rotations = rotate(current_piece, "clockwise", game_board, current_piece_rotations)
+                    piece_down_colliding = True
                 # Rotates the piece counter-clockwise
                 elif event.key in [pygame.K_z, pygame.K_RCTRL, pygame.K_LCTRL]:
-                    current_piece = rotate(current_piece, "counter-clockwise", game_board)
+                    current_piece, current_piece_rotations = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations)
+                    piece_down_colliding = True
                 # Holds the current piece
-                # elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT, pygame.K_c]:
-                #    holdPiece()
-
+                elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT, pygame.K_c]:
+                    if not held_used:
+                        if not held_piece:
+                            held_piece = piece_letter
+                            piece_letter = next_piece()
+                            current_piece, current_piece_rotations = generate_piece(piece_letter)
+                        elif held_piece:
+                            current_piece, current_piece_rotations = generate_piece(held_piece)
+                            piece_letter, held_piece = held_piece, piece_letter
+                        held_used = True
+        Time = time.time()
         # Display board
         screen.blit(board_image, (0, 0))
         # Display current piece
         display_piece(current_piece, screen)
         # Display all remaining pieces
         display_board(game_board, screen)
-
         # Determines when the piece drops and drops or locks piece if something is below
-        if time.time() > next_check:
-            if drop_collision_check(current_piece, game_board):
+        display_piece(current_piece, screen)
+        if drop_collision_check(current_piece, game_board) and piece_down_colliding:
+            piece_stop_check = get_next_check(piece_stop_delay)
+            piece_down_colliding = False
+        elif drop_collision_check(current_piece, game_board):
+            # places piece
+            if Time > piece_stop_check:
                 game_board = stop_piece(current_piece, game_board)
-                game_board = check_lines(game_board)
-                current_piece = generate_piece(next_piece())
+                game_board, lines = check_lines(game_board)
+                cleared_lines += lines
+                score, speed, btb_tetris = update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed)
+                piece_letter = next_piece()
+                current_piece, current_piece_rotations = generate_piece(piece_letter)
                 if drop_collision_check(current_piece, game_board):
+                    # end game
                     game_board = create_board()
-            else:
-                drop_piece(current_piece)
-            next_check = get_next_check(SPEED)
-
+                    speed = 800
+                    score = 0
+                held_used = False
+        else:
+            piece_down_colliding = True
+        if Time > next_check and piece_down_colliding:
+            drop_piece(current_piece)
+            next_check = get_next_check(speed)
         # Updates display to the screen
         pygame.display.update()
