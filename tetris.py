@@ -30,7 +30,7 @@ def next_piece():
     """
     global piece_list
     if not piece_list:
-        piece_list = ["I"]
+        piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
         random.shuffle(piece_list)
     return piece_list.pop(0)
 
