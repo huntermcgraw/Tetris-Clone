@@ -4,6 +4,7 @@
 import random
 import time
 import pygame
+import math
 UNIT = 48
 global piece_list
 piece_list = []
@@ -554,6 +555,7 @@ def display_board(board, display_screen):
 
 def update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed):
     """updates score according to lines cleared and updates drop piece speed by total lines cleared"""
+    level = 1
     if lines == 1:
         score += 100
         btb_tetris = False
@@ -568,8 +570,7 @@ def update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed):
         btb_tetris = True
     if cleared_lines > 1:
         speed = 800
-    return score, speed, btb_tetris
-    
+    return score, speed, btb_tetris, level
     
 if __name__ == "__main__":
     # Initialize pygame
@@ -591,18 +592,26 @@ if __name__ == "__main__":
 
     # Timer for dropping blocks
     next_check = get_next_check(speed)
-    # This is the 4 blocks that make up the tetris piece
-    # [x_coordinate, y_coordinate, colored picture]
+
     piece_letter = next_piece()
     current_piece, current_piece_rotations = generate_piece(piece_letter)
     held_piece = None
     held_used = False
     cleared_lines = 0
     score = 0
+    level = 1
     btb_tetris = False
     piece_stop_check = 0
     piece_stop_delay = speed # set to speed initially
     piece_down_colliding = True 
+    white = (255,255,255)
+    font = pygame.font.Font('font.ttf', 40)
+    score_header = font.render(f"Score", True, white)
+    score_text = font.render(f"{score}", True, white)
+    level_header = font.render(f"Level", True, white)
+    level_text = font.render(f"{level}", True, white)
+    lines_header = font.render(f"Lines Cleared", True, white)
+    lines_text = font.render(f"{cleared_lines}", True, white)
     # Main game loop
     RUNNING = True
     while RUNNING:
@@ -627,11 +636,13 @@ if __name__ == "__main__":
                         drop_piece(current_piece)
                         next_check = get_next_check(speed)
                         score += 1
+                        score_text = font.render(f"{score}", True, white)
                 # Quick drops piece to bottom and immediately starts the next piece
                 elif event.key in [pygame.K_SPACE]:
                     while not drop_collision_check(current_piece, game_board):
                         drop_piece(current_piece)
-                        score+=2
+                        score += 2
+                    score_text = font.render(f"{score}", True, white)
                     piece_stop_check = 0
                     piece_down_colliding = False
                     stop_piece(current_piece, game_board)
@@ -664,6 +675,13 @@ if __name__ == "__main__":
         display_board(game_board, screen)
         # Determines when the piece drops and drops or locks piece if something is below
         display_piece(current_piece, screen)
+        # Display text fields
+        screen.blit(score_header, (874, 395))
+        screen.blit(level_header, (878, 485))
+        screen.blit(lines_header, (830, 575))
+        screen.blit(score_text, (905-int((math.log10(score+1))*6), 440))
+        screen.blit(level_text, (905-int((math.log10(level+1))*6), 530))
+        screen.blit(lines_text, (905-int((math.log10(cleared_lines+1))*6), 610))
         if drop_collision_check(current_piece, game_board) and piece_down_colliding:
             piece_stop_check = get_next_check(piece_stop_delay)
             piece_down_colliding = False
@@ -673,7 +691,9 @@ if __name__ == "__main__":
                 game_board = stop_piece(current_piece, game_board)
                 game_board, lines = check_lines(game_board)
                 cleared_lines += lines
-                score, speed, btb_tetris = update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed)
+                lines_text = font.render(f"{cleared_lines}", True, white)
+                score, speed, btb_tetris, level  = update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed)
+                score_text = font.render(f"{score}", True, white)
                 piece_letter = next_piece()
                 current_piece, current_piece_rotations = generate_piece(piece_letter)
                 if drop_collision_check(current_piece, game_board):
