@@ -1,0 +1,25 @@
+Tetris game TODO list
+
+[ ] Main screen visual/implementation
+[ ] 	Start game
+[ ] 	High scores
+[ ] 	quit 
+[ ] 	settings
+[ ] 		music volume?
+[ ] 		change controls
+[ ] Pause screen visual/implementation
+[ ] 	resume
+[ ] 	settings
+[ ] 	quit
+[ ] end game implementation
+[ ] 	game over screen
+[ ] 		display game over/score
+[ ] 		prompt name for high score
+[ ] wall kick implementation
+[ ] hold piece visual
+[ ] next piece visual
+[ ] score/level visual
+[ ] level/difficulty increase ranges
+[ ] add piece lock delay separate from piece drop delay
+[ ] music?
+		
