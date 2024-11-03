@@ -143,7 +143,7 @@ def create_board():
     board = [[0 for _ in range(15)] for _ in range(20)]
     for i, _ in enumerate(board):
         for j, _ in enumerate(board[i]):
-            if i == 19 or j == 1 or j == 12:
+            if i >= 19 or j <= 1 or j >= 12:
                 board[i][j] = 1
     return board
 
@@ -368,7 +368,6 @@ def rotate(arr, direction, board, rotations):
             else:
                 for i in arr:
                     i[0] += 3 * UNIT
-            return arr, final_rotation
         if not review_check(arr, board):
             return arr, final_rotation 
         # fourth check
