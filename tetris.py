@@ -24,6 +24,7 @@ blue.fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
 purple.fill((196, 0, 196), special_flags=pygame.BLEND_MULT)
 teal.fill((0, 255, 255), special_flags=pygame.BLEND_MULT)
 
+
 def next_piece():
     """
         Determines the next piece to use. uses traditional tetris algorithm to prevent droughts:
@@ -667,7 +668,10 @@ if __name__ == "__main__":
                             current_piece, current_piece_rotations = generate_piece(held_piece)
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
-                        held_piece_arr, _ = generate_piece(piece_name=held_piece,x=18.5*UNIT,y=4.5*UNIT,rotations=0)
+                        if held_piece == "O" or held_piece == "I":
+                            held_piece_arr, _ = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,rotations=0)
+                        else:
+                            held_piece_arr, _ = generate_piece(piece_name=held_piece,x=2.5*UNIT,y=5*UNIT,rotations=0)
 
         Time = time.time()
 
@@ -717,6 +721,6 @@ if __name__ == "__main__":
         screen.blit(score_text, (915, 390))
         screen.blit(level_text, (915, 435))
         screen.blit(lines_text, (905 - int((math.log10(cleared_lines + 1)) * 6), 575))
-        screen.blit(held_piece_text, (850,80))
+        screen.blit(held_piece_text, (80, 50))
         # Updates display to the screen
         pygame.display.update()
