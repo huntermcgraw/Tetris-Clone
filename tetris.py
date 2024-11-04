@@ -6,8 +6,8 @@ import time
 import pygame
 import math
 UNIT = 48
+global piece_list
 piece_list = []
-# You don't need to define as global, the global keyword is for defining a variable in a function as global
 speed = 800
 red = pygame.image.load("images/Pixel.png")
 orange = pygame.image.load("images/Pixel.png")
@@ -24,7 +24,6 @@ blue.fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
 purple.fill((196, 0, 196), special_flags=pygame.BLEND_MULT)
 teal.fill((0, 255, 255), special_flags=pygame.BLEND_MULT)
 
-
 def next_piece():
     """
         Determines the next piece to use. uses traditional tetris algorithm to prevent droughts:
@@ -37,10 +36,10 @@ def next_piece():
     return piece_list.pop(0)
 
 
-def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT, rotations=-1):
+def generate_piece(piece_name ="O", x=10 * UNIT, y=1 * UNIT, rotations = -1):
     """
         Takes a piece from next_piece or a piece from the user and generates the components 
-        at the desired locations for that piece. Can also get prompted with x,y to change the
+        at the disired locations for that piece. Can also get prompted with x,y to change the 
         starting position of the home piece.
         Parameters:
         piece_name (str): one of these strings ["L", "T", "S", "Z", "I", "O", "J"]
@@ -91,13 +90,12 @@ def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT, rotations=-1):
             [x - UNIT, y, blue],
         ],
     }
-    rotations = random.randint(0, 3)
-    new_piece_rotations = 0
+    current_piece_rotations = 0
     if rotations is -1:
-        rotations = random.randint(0, 3)
+        rotations = random.randint(0,3)
     piece = key[piece_name]
     for i in range(rotations):
-        piece, new_piece_rotations = rotate(piece, "clockwise", game_board, new_piece_rotations)
+        piece, current_piece_rotations = rotate(piece, "clockwise", game_board, current_piece_rotations)
     return piece, rotations
 
 
@@ -109,7 +107,8 @@ def get_next_check(interval):
     """
     interval /= 1000
     current_time = time.time()
-    return current_time + interval
+    next_check = current_time + interval
+    return next_check
 
 
 def drop_piece(arr):
@@ -181,7 +180,7 @@ def check_lines(board):
             length = 0
             for column in board[line][2:]:
                 # Checks to see if every spot on the board is a piece
-                if isinstance(column, list):
+                if isinstance(column,list):
                     length += 1
             # If every space in the line is a piece
             if length == 10:
@@ -194,7 +193,7 @@ def check_lines(board):
                             break
                         if isinstance(space, list):  # Moves everything down by one unit
                             space[1] += UNIT
-    return board, count
+    return board,count
 
 
 def drop_collision_check(arr, board):
@@ -266,7 +265,8 @@ def rotate(arr, direction, board, rotations):
         board (arr[arr[int]]): The game board
     """
     # excludes the O piece
-    if (arr[0][0] == arr[1][0] and arr[2][0] == arr[3][0]) and (arr[0][1] == arr[2][1] and arr[1][1] == arr[3][1]):
+    if (arr[0][0] == arr[1][0] and arr[2][0] == arr[3][0]) and (
+        arr[0][1] == arr[2][1] and arr[1][1] == arr[3][1]):
         return arr, rotations
     array_prev = []
     master_x, master_y = get_x_y(arr[0])
@@ -292,9 +292,10 @@ def rotate(arr, direction, board, rotations):
         final_rotation = (1 + rotations) % 4
     else:
         final_rotation = (-1 + rotations) % 4
-    # separate I piece logic
-    if ((arr[0][0] == arr[1][0] and arr[1][0] == arr[2][0] and arr[2][0] == arr[3][0]) or
-            (arr[0][1] == arr[1][1] and arr[1][1] == arr[2][1] and arr[2][1] == arr[3][1])):
+    # seperate I piece logic
+    if (arr[0][0] == arr[1][0] and arr[1][0] == arr[2][0] and 
+        arr[2][0] == arr[3][0]) or (arr[0][1] == arr[1][1] and arr[1][1] == arr[2][1] and 
+        arr[2][1] == arr[3][1]):
         # base check for ["I"]
         if direction == "clockwise":
             if rotations == 0: 
@@ -553,25 +554,24 @@ def display_board(board, display_screen):
                 display_screen.blit(j[2], (j[0], j[1]))
 
 
-def update_score_difficulty(_cleared_lines, _lines, _btb_tetris, _score, _speed):
+def update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed):
     """updates score according to lines cleared and updates drop piece speed by total lines cleared"""
-    _level = 1
-    if _lines == 1:
-        _score += 100
-        _btb_tetris = False
-    elif _lines == 2:
-        _score += 300
-        _btb_tetris = False
-    elif _lines == 3:
-        _score += 500
-        _btb_tetris = False
-    elif _lines == 4:
-        _score += 800 + _btb_tetris * 400
-        _btb_tetris = True
-    if _cleared_lines > 1:
-        _speed = 800
-    return _score, _speed, _btb_tetris, _level
-
+    level = 1
+    if lines == 1:
+        score += 100
+        btb_tetris = False
+    elif lines == 2:
+        score += 300
+        btb_tetris = False
+    elif lines == 3:
+        score += 500
+        btb_tetris = False
+    elif lines == 4:
+        score += 800 + btb_tetris * 400
+        btb_tetris = True
+    if cleared_lines > 1:
+        speed = 800
+    return score, speed, btb_tetris, level
     
 if __name__ == "__main__":
     # Initialize pygame
@@ -604,13 +604,13 @@ if __name__ == "__main__":
     level = 1
     btb_tetris = False
     piece_stop_check = 0
-    piece_stop_delay = speed  # set to speed initially
+    piece_stop_delay = speed # set to speed initially
     piece_down_colliding = True 
-    white = (255, 255, 255)
+    white = (255,255,255)
     font = pygame.font.Font('font.ttf', 40)
-    score_header = font.render(f"Score:", True, white)
+    score_header = font.render(f"Score", True, white)
     score_text = font.render(f"{score}", True, white)
-    level_header = font.render(f"Level:", True, white)
+    level_header = font.render(f"Level", True, white)
     level_text = font.render(f"{level}", True, white)
     lines_header = font.render(f"Lines Cleared", True, white)
     lines_text = font.render(f"{cleared_lines}", True, white)
@@ -669,10 +669,13 @@ if __name__ == "__main__":
                             current_piece, current_piece_rotations = generate_piece(held_piece)
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
-                        held_piece_arr, _ = generate_piece(piece_name=held_piece, x=18*UNIT, y=4*UNIT, rotations=0)
+                        if held_piece == "O" or held_piece == "I":
+                            held_piece_arr, _ = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,rotations=0)
+                        else:
+                            held_piece_arr, _ = generate_piece(piece_name=held_piece,x=2.5*UNIT,y=5*UNIT,rotations=0)
 
         Time = time.time()
-
+        
         if drop_collision_check(current_piece, game_board) and piece_down_colliding:
             piece_stop_check = get_next_check(piece_stop_delay)
             piece_down_colliding = False
@@ -683,7 +686,7 @@ if __name__ == "__main__":
                 game_board, lines = check_lines(game_board)
                 cleared_lines += lines
                 lines_text = font.render(f"{cleared_lines}", True, white)
-                score, speed, btb_tetris, level = update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed)
+                score, speed, btb_tetris, level  = update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed)
                 score_text = font.render(f"{score}", True, white)
                 piece_letter = next_piece()
                 current_piece, current_piece_rotations = generate_piece(piece_letter)
@@ -703,20 +706,22 @@ if __name__ == "__main__":
             drop_piece(current_piece)
             next_check = get_next_check(speed)
 
-            # Display board
-            screen.blit(board_image, (0, 0))
-            # Display current piece
-            display_piece(current_piece, screen)
-            # Display all remaining pieces
-            display_board(game_board, screen)
-            # Determines when the piece drops and drops or locks piece if something is below
-            display_piece(current_piece, screen)
-            # Display text fields
-            screen.blit(score_header, (874, 395))
-            screen.blit(level_header, (878, 485))
-            screen.blit(lines_header, (830, 575))
-            screen.blit(score_text, (905-int((math.log10(score+1))*6), 440))
-            screen.blit(level_text, (905-int((math.log10(level+1))*6), 530))
-            screen.blit(lines_text, (905-int((math.log10(cleared_lines+1))*6), 610))
+        # Display board
+        screen.blit(board_image, (0, 0))
+        # Display current piece
+        display_piece(current_piece, screen)
+        display_piece(held_piece_arr, screen)
+        # Display all remaining pieces
+        display_board(game_board, screen)
+        # Determines when the piece drops and drops or locks piece if something is below
+        display_piece(current_piece, screen)
+        # Display text fields
+        screen.blit(score_header, (874, 395))
+        screen.blit(level_header, (878, 485))
+        screen.blit(lines_header, (830, 575))
+        screen.blit(score_text, (905-int((math.log10(score+1))*6), 440))
+        screen.blit(level_text, (905-int((math.log10(level+1))*6), 530))
+        screen.blit(lines_text, (905-int((math.log10(cleared_lines+1))*6), 610))
+        screen.blit(held_piece_text, (80,50))
         # Updates display to the screen
         pygame.display.update()
