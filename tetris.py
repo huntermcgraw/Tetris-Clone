@@ -36,7 +36,7 @@ def next_piece():
     return piece_list.pop(0)
 
 
-def generate_piece(piece_name ="O", x=10 * UNIT, y=1 * UNIT):
+def generate_piece(piece_name ="O", x=10 * UNIT, y=1 * UNIT, rotations = -1):
     """
         Takes a piece from next_piece or a piece from the user and generates the components 
         at the disired locations for that piece. Can also get prompted with x,y to change the 
@@ -91,7 +91,8 @@ def generate_piece(piece_name ="O", x=10 * UNIT, y=1 * UNIT):
         ],
     }
     current_piece_rotations = 0
-    rotations = random.randint(0,3)
+    if rotations is -1:
+        rotations = random.randint(0,3)
     piece = key[piece_name]
     for i in range(rotations):
         piece, current_piece_rotations = rotate(piece, "clockwise", game_board, current_piece_rotations)
@@ -535,8 +536,9 @@ def display_piece(arr, display_screen):
         arr (arr[arr[int]]): The current piece
         display_screen (pygame.surface): pygame screen
     """
-    for i in arr:
-        display_screen.blit(i[2], (i[0], i[1]))
+    if arr:
+        for i in arr:
+            display_screen.blit(i[2], (i[0], i[1]))
 
 
 def display_board(board, display_screen):
@@ -595,6 +597,7 @@ if __name__ == "__main__":
     piece_letter = next_piece()
     current_piece, current_piece_rotations = generate_piece(piece_letter)
     held_piece = None
+    held_piece_arr = None
     held_used = False
     cleared_lines = 0
     score = 0
@@ -665,22 +668,10 @@ if __name__ == "__main__":
                             current_piece, current_piece_rotations = generate_piece(held_piece)
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
+                        held_piece_arr, _ = generate_piece(piece_name=held_piece,x=18*UNIT,y=4*UNIT,rotations=0)
+
         Time = time.time()
-        # Display board
-        screen.blit(board_image, (0, 0))
-        # Display current piece
-        display_piece(current_piece, screen)
-        # Display all remaining pieces
-        display_board(game_board, screen)
-        # Determines when the piece drops and drops or locks piece if something is below
-        display_piece(current_piece, screen)
-        # Display text fields
-        screen.blit(score_header, (874, 395))
-        screen.blit(level_header, (878, 485))
-        screen.blit(lines_header, (830, 575))
-        screen.blit(score_text, (905-int((math.log10(score+1))*6), 440))
-        screen.blit(level_text, (905-int((math.log10(level+1))*6), 530))
-        screen.blit(lines_text, (905-int((math.log10(cleared_lines+1))*6), 610))
+        
         if drop_collision_check(current_piece, game_board) and piece_down_colliding:
             piece_stop_check = get_next_check(piece_stop_delay)
             piece_down_colliding = False
@@ -699,12 +690,35 @@ if __name__ == "__main__":
                     # end game
                     game_board = create_board()
                     speed = 800
+                    level = 1
+                    level_text = font.render(f"{level}", True, white)
                     score = 0
+                    score_text = font.render(f"{score}", True, white)
+
                 held_used = False
         else:
             piece_down_colliding = True
         if Time > next_check and piece_down_colliding:
             drop_piece(current_piece)
             next_check = get_next_check(speed)
+
+        # Display board
+        screen.blit(board_image, (0, 0))
+        # Display current piece
+        print(current_piece)
+        display_piece(current_piece, screen)
+        print(held_piece_arr)
+        display_piece(held_piece_arr, screen)
+        # Display all remaining pieces
+        display_board(game_board, screen)
+        # Determines when the piece drops and drops or locks piece if something is below
+        display_piece(current_piece, screen)
+        # Display text fields
+        screen.blit(score_header, (874, 395))
+        screen.blit(level_header, (878, 485))
+        screen.blit(lines_header, (830, 575))
+        screen.blit(score_text, (905-int((math.log10(score+1))*6), 440))
+        screen.blit(level_text, (905-int((math.log10(level+1))*6), 530))
+        screen.blit(lines_text, (905-int((math.log10(cleared_lines+1))*6), 610))
         # Updates display to the screen
         pygame.display.update()
