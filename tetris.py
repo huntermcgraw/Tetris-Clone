@@ -612,6 +612,7 @@ if __name__ == "__main__":
     level_text = font.render(f"{level}", True, white)
     lines_header = font.render(f"Lines Cleared", True, white)
     lines_text = font.render(f"{cleared_lines}", True, white)
+    held_piece_text = font.render("Held Piece", True, white)
     # Main game loop
     RUNNING = True
     while RUNNING:
@@ -666,7 +667,7 @@ if __name__ == "__main__":
                             current_piece, current_piece_rotations = generate_piece(held_piece)
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
-                        held_piece_arr, _ = generate_piece(piece_name=held_piece,x=18*UNIT,y=4*UNIT,rotations=0)
+                        held_piece_arr, _ = generate_piece(piece_name=held_piece,x=18.5*UNIT,y=4.5*UNIT,rotations=0)
 
         Time = time.time()
 
@@ -699,10 +700,12 @@ if __name__ == "__main__":
         if Time > next_check and piece_down_colliding:
             drop_piece(current_piece)
             next_check = get_next_check(speed)
+
         # Display board
         screen.blit(board_image, (0, 0))
         # Display current piece
         display_piece(current_piece, screen)
+        display_piece(held_piece_arr, screen)
         # Display all remaining pieces
         display_board(game_board, screen)
         # Determines when the piece drops and drops or locks piece if something is below
@@ -714,5 +717,6 @@ if __name__ == "__main__":
         screen.blit(score_text, (915, 390))
         screen.blit(level_text, (915, 435))
         screen.blit(lines_text, (905 - int((math.log10(cleared_lines + 1)) * 6), 575))
+        screen.blit(held_piece_text, (850,80))
         # Updates display to the screen
         pygame.display.update()
