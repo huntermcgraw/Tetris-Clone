@@ -92,11 +92,11 @@ def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT, rotations=-1):
         ],
     }
     new_piece_rotations = 0
-    if rotations is -1:
+    if rotations == -1:
         rotations = random.randint(0, 3)
     piece = key[piece_name]
     for i in range(rotations):
-        piece, new_piece_rotations = rotate(piece, "clockwise", game_board, new_piece_rotations)
+        piece, new_piece_rotations, _ = rotate(piece, "clockwise", game_board, new_piece_rotations)
     return piece, rotations
 
 
@@ -266,7 +266,7 @@ def rotate(arr, direction, board, rotations):
     """
     # excludes the O piece
     if (arr[0][0] == arr[1][0] and arr[2][0] == arr[3][0]) and (arr[0][1] == arr[2][1] and arr[1][1] == arr[3][1]):
-        return arr, rotations
+        return arr, rotations, False
     array_prev = []
     master_x, master_y = get_x_y(arr[0])
     for i in arr:
@@ -293,7 +293,7 @@ def rotate(arr, direction, board, rotations):
         final_rotation = (-1 + rotations) % 4
     # separate I piece logic
     if ((arr[0][0] == arr[1][0] and arr[1][0] == arr[2][0] and arr[2][0] == arr[3][0]) or
-            (arr[0][1] == arr[1][1] and arr[1][1] == arr[2][1] and arr[2][1] == arr[3][1])):
+            (arr[0][1] == arr[1][1] and arr[1][1] == arr[2][1] and   arr[2][1] == arr[3][1])):
         # base check for ["I"]
         if direction == "clockwise":
             if rotations == 0: 
@@ -322,7 +322,7 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[1] -= 1 * UNIT
         if not review_check(arr, board):
-            return arr, final_rotation
+            return arr, final_rotation, True
         # second check
         if direction == "clockwise":
             if rotations == 0: 
@@ -351,7 +351,7 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[0] -= 2 * UNIT
         if not review_check(arr, board):
-            return arr, final_rotation 
+            return arr, final_rotation, True 
         # third check
         if direction == "clockwise":
             if rotations == 0 or rotations == 1:
@@ -368,7 +368,7 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[0] += 3 * UNIT
         if not review_check(arr, board):
-            return arr, final_rotation 
+            return arr, final_rotation, True 
         # fourth check
         if direction == "clockwise":
             if rotations == 0 or rotations == 1:
@@ -411,7 +411,7 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[1] += 1 * UNIT
         if not review_check(arr, board):
-            return arr, final_rotation
+            return arr, final_rotation, True
         # fifth check
         if direction == "clockwise":
             if rotations == 0 or rotations == 1:
@@ -440,11 +440,11 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[1] -= 3 * UNIT
         if not review_check(arr, board):
-            return arr, final_rotation
-        return array_prev, rotations
+            return arr, final_rotation, True
+        return array_prev, rotations, False
     # base check for ["L", "T", "S", "Z", "J"]
     if not review_check(arr, board):
-        return arr, final_rotation 
+        return arr, final_rotation, True 
     # second check
     if direction == "clockwise":
         if rotations == 0 or rotations == 3:
@@ -461,7 +461,7 @@ def rotate(arr, direction, board, rotations):
             for i in arr:
                 i[0] -= 1 * UNIT
     if not review_check(arr, board):
-        return arr, final_rotation
+        return arr, final_rotation, True
     # third check
     if rotations == 0 or rotations == 2:
         for i in arr:
@@ -470,7 +470,7 @@ def rotate(arr, direction, board, rotations):
         for i in arr:
             i[1] += 1 * UNIT
     if not review_check(arr, board):
-        return arr, final_rotation
+        return arr, final_rotation, True
     # fourth check
     if rotations == 0 or rotations == 2:
         for i in arr:
@@ -493,7 +493,7 @@ def rotate(arr, direction, board, rotations):
             for i in arr:
                 i[0] += 1 * UNIT
     if not review_check(arr, board):
-        return arr, final_rotation
+        return arr, final_rotation, True
     # fifth check
     if direction == "clockwise":
         if rotations == 0 or rotations == 3:
@@ -510,8 +510,8 @@ def rotate(arr, direction, board, rotations):
             for i in arr:
                 i[0] -= 1 * UNIT
     if not review_check(arr, board):
-        return arr, final_rotation
-    return array_prev, rotations
+        return arr, final_rotation, True
+    return array_prev, rotations, False
 
 
 def get_x_y(unit):
@@ -527,7 +527,7 @@ def get_x_y(unit):
 
 def display_piece(arr, display_screen):
     """
-        prints the game piece to the board this is separate from the board array and 
+        prins the game piece to the board this is separate from the board array and 
         is not contained in the array
         this function displays the current piece over the board.
         Parameters:
@@ -553,7 +553,15 @@ def display_board(board, display_screen):
 
 
 def update_score_difficulty(_cleared_lines, _lines, _btb_tetris, _score, _speed):
-    """updates score according to lines cleared and updates drop piece speed by total lines cleared"""
+    """updates score according to lines cleared and updates drop piece speed by total lines cleared
+    1 is 1 line
+    2 is 2 lines
+    3 is 3 lines
+    4 is 1 line t spin or 4 lines
+    5 is 2 line t spin
+    6 is 3 line t spin
+
+    """
     _level = 1
     if _lines == 1:
         _score += 100
@@ -567,10 +575,29 @@ def update_score_difficulty(_cleared_lines, _lines, _btb_tetris, _score, _speed)
     elif _lines == 4:
         _score += 800 + _btb_tetris * 400
         _btb_tetris = True
+    elif _lines == 5:
+        _score += 1200 + _btb_tetris * 600
+        _btb_tetris = True
+    elif _lines == 6:  
+        _score += 1600 + _btb_tetris * 800
+        _btb_tetris = True
     if _cleared_lines > 1:
         _speed = 800
     return _score, _speed, _btb_tetris, _level
 
+def t_spin_check(arr, board):
+    count = 0
+    x,y = get_x_y(arr[0])
+    if board[y+1][x+1] != 0:
+        count+=1  
+    if board[y-1][x+1] != 0:
+        count+=1
+    if board[y+1][x-1] != 0:
+        count+=1
+    if board[y-1][x-1] != 0:
+        count+=1
+    return count>=3
+    
     
 if __name__ == "__main__":
     # Initialize pygame
@@ -590,7 +617,7 @@ if __name__ == "__main__":
     # empty 1 is boarder and lists are the tetris blocks
     game_board = create_board()
 
-    # Timer for dropping blocks
+    # Timer for dropping blocksc c
     next_check = get_next_check(speed)
 
     piece_letter = next_piece()
@@ -601,6 +628,7 @@ if __name__ == "__main__":
     cleared_lines = 0
     score = 0
     level = 1
+    last_move_rotation = False
     btb_tetris = False
     piece_stop_check = 0
     piece_stop_delay = speed  # set to speed initially
@@ -651,11 +679,11 @@ if __name__ == "__main__":
                     next_check = get_next_check(speed)
                 # Rotates the piece clockwise
                 elif event.key in [pygame.K_x, pygame.K_UP]:
-                    current_piece, current_piece_rotations = rotate(current_piece, "clockwise", game_board, current_piece_rotations)
+                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "clockwise", game_board, current_piece_rotations)
                     piece_down_colliding = True
                 # Rotates the piece counter-clockwise
                 elif event.key in [pygame.K_z, pygame.K_RCTRL, pygame.K_LCTRL]:
-                    current_piece, current_piece_rotations = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations)
+                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations)
                     piece_down_colliding = True
                 # Holds the current piece
                 elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT, pygame.K_c]:
@@ -679,8 +707,11 @@ if __name__ == "__main__":
             piece_stop_check = get_next_check(piece_stop_delay)
             piece_down_colliding = False
         elif drop_collision_check(current_piece, game_board):
-            # places piece
             if Time > piece_stop_check:
+                # places piece
+                if piece_letter == "T" and t_spin_check(current_piece, game_board) and last_move_rotation:
+                    print("t-spin")      
+                    lines += 3
                 game_board = stop_piece(current_piece, game_board)
                 game_board, lines = check_lines(game_board)
                 cleared_lines += lines
@@ -702,6 +733,7 @@ if __name__ == "__main__":
         else:
             piece_down_colliding = True
         if Time > next_check and piece_down_colliding:
+            last_move_rotation = False
             drop_piece(current_piece)
             next_check = get_next_check(speed)
 
@@ -709,6 +741,7 @@ if __name__ == "__main__":
         screen.blit(board_image, (0, 0))
         # Display current piece
         display_piece(current_piece, screen)
+        # Display held piece
         display_piece(held_piece_arr, screen)
         # Display all remaining pieces
         display_board(game_board, screen)
@@ -721,6 +754,6 @@ if __name__ == "__main__":
         screen.blit(score_text, (915, 390))
         screen.blit(level_text, (915, 435))
         screen.blit(lines_text, (905 - int((math.log10(cleared_lines + 1)) * 6), 575))
-        screen.blit(held_piece_text, (80, 50))
+        screen.blit(held_piece_text, (70, 50))
         # Updates display to the screen
         pygame.display.update()
