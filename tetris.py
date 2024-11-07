@@ -552,18 +552,20 @@ def display_board(board, display_screen):
                 display_screen.blit(j[2], (j[0], j[1]))
 
 
-def update_score_difficulty(_cleared_lines, _lines, _btb_tetris, _score, _speed):
+def update_score(_lines, _btb_tetris, _score, _t_spin):
     """updates score according to lines cleared and updates drop piece speed by total lines cleared
-    1 is 1 line
-    2 is 2 lines
-    3 is 3 lines
-    4 is 1 line t spin or 4 lines
-    5 is 2 line t spin
-    6 is 3 line t spin
-
     """
-    _level = 1
-    if _lines == 1:
+    if t_spin:
+        if _lines == 1:
+            _score += 800 + _btb_tetris * 400
+            _btb_tetris = True
+        elif _lines == 2:
+            _score += 1200 + _btb_tetris * 600
+            _btb_tetris = True
+        elif _lines == 3:
+            _score += 1600 + _btb_tetris * 800
+            _btb_tetris = True
+    elif _lines == 1:
         _score += 100
         _btb_tetris = False
     elif _lines == 2:
@@ -575,15 +577,7 @@ def update_score_difficulty(_cleared_lines, _lines, _btb_tetris, _score, _speed)
     elif _lines == 4:
         _score += 800 + _btb_tetris * 400
         _btb_tetris = True
-    elif _lines == 5:
-        _score += 1200 + _btb_tetris * 600
-        _btb_tetris = True
-    elif _lines == 6:  
-        _score += 1600 + _btb_tetris * 800
-        _btb_tetris = True
-    if _cleared_lines > 1:
-        _speed = 800
-    return _score, _speed, _btb_tetris, _level
+    return _score, _btb_tetris
 
 def t_spin_check(arr, board):
     count = 0
@@ -633,6 +627,7 @@ if __name__ == "__main__":
     piece_stop_check = 0
     piece_stop_delay = speed  # set to speed initially
     piece_down_colliding = True 
+    t_spin = False
     white = (255, 255, 255)
     font = pygame.font.Font('font.ttf', 40)
     score_header = font.render(f"Score:", True, white)
@@ -710,13 +705,13 @@ if __name__ == "__main__":
             if Time > piece_stop_check:
                 # places piece
                 if piece_letter == "T" and t_spin_check(current_piece, game_board) and last_move_rotation:
-                    print("t-spin")      
-                    lines += 3
+                    t_spin = True
+                
                 game_board = stop_piece(current_piece, game_board)
                 game_board, lines = check_lines(game_board)
                 cleared_lines += lines
                 lines_text = font.render(f"{cleared_lines}", True, white)
-                score, speed, btb_tetris, level = update_score_difficulty(cleared_lines, lines, btb_tetris, score, speed)
+                score, btb_tetris = update_score(lines, btb_tetris, score, t_spin)
                 score_text = font.render(f"{score}", True, white)
                 piece_letter = next_piece()
                 current_piece, current_piece_rotations = generate_piece(piece_letter)
