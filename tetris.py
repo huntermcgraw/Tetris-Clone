@@ -646,6 +646,7 @@ if __name__ == "__main__":
     lines_header = font.render(f"Lines Cleared", True, white)
     lines_text = font.render(f"{cleared_lines}", True, white)
     held_piece_text = font.render("Held Piece", True, white)
+    future_piece_text = font.render("Next Piece", True, white)
     # Main game loop
     RUNNING = True
     while RUNNING:
@@ -776,5 +777,6 @@ if __name__ == "__main__":
         screen.blit(level_text, (915, 435))
         screen.blit(lines_text, (905 - int((math.log10(cleared_lines + 1)) * 6), 575))
         screen.blit(held_piece_text, (70, 50))
+        screen.blit(future_piece_text, (840, 50))
         # Updates display to the screen
         pygame.display.update()
