@@ -599,6 +599,7 @@ if __name__ == "__main__":
     # Create the screen and set dimensions
     X_WIDTH = 1056
     Y_WIDTH = 960
+    future_piece = 'None'
     screen = pygame.display.set_mode((X_WIDTH, Y_WIDTH))
     board_image = pygame.image.load("images/Background.png")
     # Set title
@@ -611,10 +612,18 @@ if __name__ == "__main__":
     # empty 1 is boarder and lists are the tetris blocks
     game_board = create_board()
 
-    # Timer for dropping blocksc c
+    # Timer for dropping blocks
     next_check = get_next_check(speed)
 
     piece_letter = next_piece()
+    future_piece = next_piece()
+
+    if future_piece == "O" or future_piece == "I":
+        future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
+                                             rotations=0)
+    else:
+        future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
+                                             rotations=0)
     current_piece, current_piece_rotations = generate_piece(piece_letter)
     held_piece = None
     held_piece_arr = None
@@ -685,7 +694,14 @@ if __name__ == "__main__":
                     if not held_used:
                         if not held_piece:
                             held_piece = piece_letter
-                            piece_letter = next_piece()
+                            piece_letter = future_piece
+                            future_piece = next_piece()
+                            if future_piece == "O" or future_piece == "I":
+                                future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
+                                                                     rotations=0)
+                            else:
+                                future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
+                                                                     rotations=0)
                             current_piece, current_piece_rotations = generate_piece(piece_letter)
                         elif held_piece:
                             current_piece, current_piece_rotations = generate_piece(held_piece)
@@ -714,7 +730,14 @@ if __name__ == "__main__":
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin)
                 t_spin = False
                 score_text = font.render(f"{score}", True, white)
-                piece_letter = next_piece()
+                piece_letter = future_piece
+                future_piece = next_piece()
+                if future_piece == "O" or future_piece == "I":
+                    future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
+                                                         rotations=0)
+                else:
+                    future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
+                                                         rotations=0)
                 current_piece, current_piece_rotations = generate_piece(piece_letter)
                 if drop_collision_check(current_piece, game_board):
                     # end game
@@ -739,6 +762,10 @@ if __name__ == "__main__":
         display_piece(current_piece, screen)
         # Display held piece
         display_piece(held_piece_arr, screen)
+        # Display the next piece
+        display_piece(future_piece_arr, screen)
+        # Display the current piece
+        display_piece(current_piece, screen)
         # Display all remaining pieces
         display_board(game_board, screen)
         # Determines when the piece drops and drops or locks piece if something is below
