@@ -764,8 +764,6 @@ if __name__ == "__main__":
         display_piece(held_piece_arr, screen)
         # Display the next piece
         display_piece(future_piece_arr, screen)
-        # Display the current piece
-        display_piece(current_piece, screen)
         # Display all remaining pieces
         display_board(game_board, screen)
         # Determines when the piece drops and drops or locks piece if something is below
