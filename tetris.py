@@ -555,7 +555,7 @@ def display_board(board, display_screen):
 def update_score(_lines, _btb_tetris, _score, _t_spin):
     """updates score according to lines cleared and updates drop piece speed by total lines cleared
     """
-    if t_spin:
+    if _t_spin:
         if _lines == 1:
             _score += 800 + _btb_tetris * 400
             _btb_tetris = True
@@ -712,6 +712,7 @@ if __name__ == "__main__":
                 cleared_lines += lines
                 lines_text = font.render(f"{cleared_lines}", True, white)
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin)
+                t_spin = False
                 score_text = font.render(f"{score}", True, white)
                 piece_letter = next_piece()
                 current_piece, current_piece_rotations = generate_piece(piece_letter)
