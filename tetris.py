@@ -579,6 +579,42 @@ def update_score(_lines, _btb_tetris, _score, _t_spin):
         _btb_tetris = True
     return _score, _btb_tetris
 
+def update_difficulty(cleared_lines):
+    check = math.floor(cleared_lines/10)
+    match check:
+        case 0:
+            return check+1,800
+        case 1:
+            return check+1,716.67
+        case 2:
+            return check+1,633.33
+        case 3:
+            return check+1,550
+        case 4:
+            return check+1,466.67
+        case 5:
+            return check+1,383.33
+        case 6:
+            return check+1,300
+        case 7:
+            return check+1,216.67
+        case 8:
+            return check+1,133.33
+        case 9:
+            return check+1,100
+        case 10,11,12:
+            return check+1,83.33
+        case 13,14,15:
+            return check+1,66.67
+        case 16,17,18:
+            return check+1,50
+        case 19,20,21,22,23,24,25,26,27,28:
+            return check+1,33.33
+        case _:
+            return check+1,16.67
+        
+        
+
 def t_spin_check(arr, board):
     count = 0
     x,y = get_x_y(arr[0])
@@ -591,7 +627,6 @@ def t_spin_check(arr, board):
     if board[y-1][x-1] != 0:
         count+=1
     return count>=3
-    
     
 if __name__ == "__main__":
     # Initialize pygame
@@ -729,8 +764,10 @@ if __name__ == "__main__":
                 cleared_lines += lines
                 lines_text = font.render(f"{cleared_lines}", True, white)
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin)
-                t_spin = False
+                level, speed = update_difficulty(cleared_lines)
                 score_text = font.render(f"{score}", True, white)
+                level_text = font.render(f"{level}", True, white)
+                t_spin = False
                 piece_letter = future_piece
                 future_piece = next_piece()
                 if future_piece == "O" or future_piece == "I":
