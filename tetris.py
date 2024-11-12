@@ -552,33 +552,33 @@ def display_board(board, display_screen):
                 display_screen.blit(j[2], (j[0], j[1]))
 
 
-def update_score(_lines, _btb_tetris, _score, _t_spin):
+def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
     """updates score according to lines cleared and updates drop piece speed by total lines cleared
     """
     if _t_spin:
         if _lines == 1:
-            _score += 800 + _btb_tetris * 400
+            _score += (800 + _btb_tetris * 400)*_level
             _btb_tetris = True
         elif _lines == 2:
-            _score += 1200 + _btb_tetris * 600
+            _score += (1200 + _btb_tetris * 600)*_level
             _btb_tetris = True
         elif _lines == 3:
-            _score += 1600 + _btb_tetris * 800
+            _score += (1600 + _btb_tetris * 800)*_level
             _btb_tetris = True
     elif _lines == 1:
-        _score += 100
+        _score += 100*_level
         _btb_tetris = False
     elif _lines == 2:
-        _score += 300
+        _score += 300*_level
         _btb_tetris = False
     elif _lines == 3:
-        _score += 500
+        _score += 500*_level
         _btb_tetris = False
     elif _lines == 4:
-        _score += 800 + _btb_tetris * 400
+        _score += (800 + _btb_tetris * 400)*_level
         _btb_tetris = True
     return _score, _btb_tetris
-
+    
 def update_difficulty(cleared_lines):
     check = math.floor(cleared_lines/10)
     match check:
@@ -763,7 +763,7 @@ if __name__ == "__main__":
                 game_board, lines = check_lines(game_board)
                 cleared_lines += lines
                 lines_text = font.render(f"{cleared_lines}", True, white)
-                score, btb_tetris = update_score(lines, btb_tetris, score, t_spin)
+                score, btb_tetris = update_score(lines, btb_tetris, score, t_spin, level)
                 level, speed = update_difficulty(cleared_lines)
                 score_text = font.render(f"{score}", True, white)
                 level_text = font.render(f"{level}", True, white)
