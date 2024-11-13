@@ -623,8 +623,6 @@ def update_difficulty(cleared_lines):
             return check+1,33.33,383.33
         case _:
             return check+1,16.67,300
-        
-        
 
 def t_spin_check(arr, board):
     count = 0
@@ -655,7 +653,9 @@ if __name__ == "__main__":
     music = pygame.mixer.music.load("music.mp3")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(.1)
-    
+    # Add cute little icon
+    icon = pygame.image.load('images/icon.png')
+    pygame.display.set_icon(icon)
     # representation of board for background logic 0 is
     # empty 1 is boarder and lists are the tetris blocks
     game_board = create_board()
@@ -664,7 +664,8 @@ if __name__ == "__main__":
     speed = 800
     next_check = get_next_check(speed)
     piece_stop_delay = speed
-    
+    down_speed = 50
+    next_down_check = 0
     # generate pieces to drop
     piece_letter = next_piece()
     future_piece = next_piece()
@@ -697,6 +698,7 @@ if __name__ == "__main__":
     t_spin = False
     btb_tetris = False
     last_move_rotation = False
+    down_pressed = False
     
     # Create all visual text and fields
     font = pygame.font.Font('font.ttf', 40)
@@ -713,12 +715,16 @@ if __name__ == "__main__":
     # Main game loop
     RUNNING = True
     while RUNNING:
+        Time = time.time()
         for event in pygame.event.get():
             # Closes the window if X is pressed
             if event.type == pygame.QUIT:
                 RUNNING = False
             # This section executes each command on button press
             # and not again until they are released
+            if event.type == pygame.KEYUP:
+                if event.key in [pygame.K_DOWN, pygame.K_d]:
+                    down_pressed = False
             if event.type == pygame.KEYDOWN:
                 # Moves piece to right if possible
                 if event.key in [pygame.K_RIGHT, pygame.K_d]:
@@ -732,11 +738,7 @@ if __name__ == "__main__":
                         piece_down_colliding = False
                 # Moves piece down if possible and resets drop timer
                 elif event.key in [pygame.K_DOWN, pygame.K_s]:
-                    if not drop_collision_check(current_piece, game_board):
-                        drop_piece(current_piece)
-                        next_check = get_next_check(speed)
-                        score += 1
-                        score_text = font.render(f"{score}", True, WHITE)
+                    down_pressed = True
                 # Quick drops piece to bottom and immediately starts the next piece
                 elif event.key in [pygame.K_SPACE]:
                     while not drop_collision_check(current_piece, game_board):
@@ -777,39 +779,58 @@ if __name__ == "__main__":
                             held_piece_arr = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,rotations=0,colors=colors)
                         else:
                             held_piece_arr = generate_piece(piece_name=held_piece,x=2.5*UNIT,y=5*UNIT,rotations=0,colors=colors)
-
-        Time = time.time()
-
+            
+        if down_pressed: 
+            if Time > next_down_check:
+                if not drop_collision_check(current_piece, game_board):
+                    drop_piece(current_piece)
+                    next_down_check = get_next_check(down_speed)
+                    score += 1
+                    score_text = font.render(f"{score}", True, WHITE)
+                else:
+                    down_pressed = False
+                
         if drop_collision_check(current_piece, game_board) and piece_down_colliding:
             piece_stop_check = get_next_check(piece_stop_delay)
             piece_down_colliding = False
         elif drop_collision_check(current_piece, game_board):
             if Time > piece_stop_check:
-                # places piece
+                # Places piece
                 if piece_letter == "T" and t_spin_check(current_piece, game_board) and last_move_rotation:
                     t_spin = True
                     # colors = load_pixel_color(pixel2)
+                t_spin = False
+                held_used = False
                 
+                # Apply the piece to the board
                 game_board = stop_piece(current_piece, game_board)
+                # Remove full lines
                 game_board, lines = check_lines(game_board)
                 cleared_lines += lines
+                # Update statistics
                 lines_text = font.render(f"{cleared_lines}", True, WHITE)
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin, level)
                 level, speed, piece_stop_delay = update_difficulty(cleared_lines)
                 score_text = font.render(f"{score}", True, WHITE)
                 level_text = font.render(f"{level}", True, WHITE)
-                t_spin = False
+                
+                # Rotate pieces
                 piece_letter = future_piece
                 future_piece = next_piece()
+                
+                # Place new next piece in position
                 if future_piece == "O" or future_piece == "I":
                     future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
                                                          rotations=0,colors=colors)
                 else:
                     future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
                                                          rotations=0,colors=colors)
+                    
+                # Create new piece
                 current_piece = generate_piece(piece_letter,colors=colors)
+                
+                # If no space for new piece end game
                 if drop_collision_check(current_piece, game_board):
-                    # end game
                     game_board = create_board()
                     speed = 800
                     level = 1
@@ -818,8 +839,6 @@ if __name__ == "__main__":
                     score_text = font.render(f"{score}", True, WHITE)
                     held_piece = None
                     held_piece_arr = None
-
-                held_used = False
         else:
             piece_down_colliding = True
         if Time > next_check and piece_down_colliding:
