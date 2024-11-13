@@ -9,8 +9,6 @@ UNIT = 48
 piece_list = []
 # You don't need to define as global, the global keyword is for defining a variable in a function as global
 
-speed = 800
-
 def load_pixel_color(pixel_path="images/Pixel.png"):
     WHITE = pygame.image.load(pixel_path)
     colors = {
@@ -104,13 +102,7 @@ def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT, rotations=-1,colors=
             [x - UNIT, y, BLUE],
         ],
     }
-    new_piece_rotations = 0
-    if rotations == -1:
-        rotations = random.randint(0, 3)
-    piece = key[piece_name]
-    for i in range(rotations):
-        piece, new_piece_rotations, _ = rotate(piece, "clockwise", game_board, new_piece_rotations)
-    return piece, rotations
+    return key[piece_name]
 
 
 def get_next_check(interval):
@@ -653,51 +645,62 @@ if __name__ == "__main__":
     # Create the screen and set dimensions
     X_WIDTH = 1056
     Y_WIDTH = 960
-    future_piece = 'None'
     screen = pygame.display.set_mode((X_WIDTH, Y_WIDTH))
     board_image = pygame.image.load("images/Background.png")
     # Set title
     pygame.display.set_caption("Tetris")
-
     # Adds the board background image
     screen.blit(board_image, (0, 0))
-
+    # Plays tetris music on repeat
+    music = pygame.mixer.music.load("music.mp3")
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(.1)
+    
     # representation of board for background logic 0 is
     # empty 1 is boarder and lists are the tetris blocks
     game_board = create_board()
-
-    # Timer for dropping blocks
+    
+    # default drop speed in (ms) and time events for dropping and locking pieces
+    speed = 800
     next_check = get_next_check(speed)
+    piece_stop_delay = speed
+    
     # generate pieces to drop
     piece_letter = next_piece()
     future_piece = next_piece()
-    # create colors to use
+    
+    # paths for seperate images for pieces
     pixel = "images/Pixel.png"
     pixel2 = "images/Pixel2.png"
     pixel3 = "images/Pixel3.png"
+    # color the path selected and return the color dictionary
     colors = load_pixel_color(pixel)
     
+    # generate the next piece in the desired location
     if future_piece == "O" or future_piece == "I":
-        future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
+        future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
                                              rotations=0,colors=colors)
     else:
-        future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
+        future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
                                              rotations=0,colors=colors)
-    current_piece, current_piece_rotations = generate_piece(piece_letter,colors=colors)
+
+    current_piece = generate_piece(piece_letter,colors=colors)
     held_piece = None
     held_piece_arr = None
     held_used = False
+    current_piece_rotations = 0
     cleared_lines = 0
     score = 0
-    level = 1
-    last_move_rotation = False
-    btb_tetris = False
     piece_stop_check = 0
-    piece_stop_delay = speed  # set to speed initially
+    level = 1
     piece_down_colliding = True 
     t_spin = False
-    WHITE = (255, 255, 255)
+    btb_tetris = False
+    last_move_rotation = False
+    
+    # Create all visual text and fields
     font = pygame.font.Font('font.ttf', 40)
+    WHITE = (255, 255, 255)
     score_header = font.render(f"Score:", True, WHITE)
     score_text = font.render(f"{score}", True, WHITE)
     level_header = font.render(f"Level:", True, WHITE)
@@ -706,6 +709,7 @@ if __name__ == "__main__":
     lines_text = font.render(f"{cleared_lines}", True, WHITE)
     held_piece_text = font.render("Held Piece", True, WHITE)
     future_piece_text = font.render("Next Piece", True, WHITE)
+    
     # Main game loop
     RUNNING = True
     while RUNNING:
@@ -759,20 +763,20 @@ if __name__ == "__main__":
                             piece_letter = future_piece
                             future_piece = next_piece()
                             if future_piece == "O" or future_piece == "I":
-                                future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
+                                future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
                                                                      rotations=0,colors=colors)
                             else:
-                                future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
+                                future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
                                                                      rotations=0,colors=colors)
-                            current_piece, current_piece_rotations = generate_piece(piece_letter,colors=colors)
+                            current_piece = generate_piece(piece_letter,colors=colors)
                         elif held_piece:
-                            current_piece, current_piece_rotations = generate_piece(held_piece,colors=colors)
+                            current_piece = generate_piece(held_piece,colors=colors)
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
                         if held_piece == "O" or held_piece == "I":
-                            held_piece_arr, _ = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,rotations=0,colors=colors)
+                            held_piece_arr = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,rotations=0,colors=colors)
                         else:
-                            held_piece_arr, _ = generate_piece(piece_name=held_piece,x=2.5*UNIT,y=5*UNIT,rotations=0,colors=colors)
+                            held_piece_arr = generate_piece(piece_name=held_piece,x=2.5*UNIT,y=5*UNIT,rotations=0,colors=colors)
 
         Time = time.time()
 
@@ -798,12 +802,12 @@ if __name__ == "__main__":
                 piece_letter = future_piece
                 future_piece = next_piece()
                 if future_piece == "O" or future_piece == "I":
-                    future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
+                    future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
                                                          rotations=0,colors=colors)
                 else:
-                    future_piece_arr, _ = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
+                    future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
                                                          rotations=0,colors=colors)
-                current_piece, current_piece_rotations = generate_piece(piece_letter,colors=colors)
+                current_piece = generate_piece(piece_letter,colors=colors)
                 if drop_collision_check(current_piece, game_board):
                     # end game
                     game_board = create_board()
