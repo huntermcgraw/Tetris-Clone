@@ -863,6 +863,8 @@ if __name__ == "__main__":
                     level_text = font.render(f"{level}", True, WHITE)
                     score = 0
                     score_text = font.render(f"{score}", True, WHITE)
+                    cleared_lines = 0
+                    lines_text = font.render(f"{cleared_lines}", True, WHITE)
                     held_piece = None
                     held_piece_arr = None
         else:
