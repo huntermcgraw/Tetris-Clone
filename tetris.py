@@ -1,6 +1,7 @@
 """random is needed to shuffle the pieces to make them random
     Time will be needed to shift the pieces over the board
     pygame is our main game framework """
+import copy
 import random
 import time
 import pygame
@@ -18,7 +19,8 @@ def load_pixel_color(pixel_path="images/Pixel.png"):
         "GREEN": WHITE.copy(),
         "BLUE": WHITE.copy(),
         "PURPLE": WHITE.copy(),
-        "TEAL": WHITE.copy()
+        "TEAL": WHITE.copy(),
+        "SHADOW": WHITE.copy()
     }
     colors["RED"].fill((255, 0, 0), special_flags=pygame.BLEND_MULT)
     colors["ORANGE"].fill((255, 128, 0), special_flags=pygame.BLEND_MULT)
@@ -27,6 +29,7 @@ def load_pixel_color(pixel_path="images/Pixel.png"):
     colors["BLUE"].fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
     colors["PURPLE"].fill((196, 0, 196), special_flags=pygame.BLEND_MULT)
     colors["TEAL"].fill((0, 255, 255), special_flags=pygame.BLEND_MULT)
+    colors["SHADOW"].fill((50, 50, 50), special_flags=pygame.BLEND_MULT)
     return colors
 
 def next_piece():
@@ -637,6 +640,18 @@ def t_spin_check(arr, board):
         count+=1
     return count>=3
     
+def get_shadow(arr, board, colors):
+    placeholder = []
+    for item in arr:
+        x, y, surface = item
+        new_surface = surface.copy() 
+        placeholder.append([x, y, new_surface])
+    for i in placeholder:
+        i[2] = colors["SHADOW"]
+    while not drop_collision_check(placeholder, board):
+        drop_piece(placeholder)
+    return placeholder
+    
 if __name__ == "__main__":
     # Initialize pygame
     pygame.init()
@@ -686,6 +701,7 @@ if __name__ == "__main__":
                                              rotations=0,colors=colors)
 
     current_piece = generate_piece(piece_letter,colors=colors)
+    shadow = get_shadow(current_piece, game_board, colors)
     held_piece = None
     held_piece_arr = None
     held_used = False
@@ -730,11 +746,13 @@ if __name__ == "__main__":
                 if event.key in [pygame.K_RIGHT, pygame.K_d]:
                     if not right_collision_check(current_piece, game_board):
                         move_piece(current_piece, "right")
+                        shadow = get_shadow(current_piece, game_board, colors)
                         piece_down_colliding = False
                 # Moves piece to left if possible
                 elif event.key in [pygame.K_LEFT, pygame.K_a]:
                     if not left_collision_check(current_piece, game_board):
                         move_piece(current_piece, "left")
+                        shadow = get_shadow(current_piece, game_board, colors)
                         piece_down_colliding = False
                 # Moves piece down if possible and resets drop timer
                 elif event.key in [pygame.K_DOWN, pygame.K_s]:
@@ -752,10 +770,12 @@ if __name__ == "__main__":
                 # Rotates the piece clockwise
                 elif event.key in [pygame.K_x, pygame.K_UP]:
                     current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "clockwise", game_board, current_piece_rotations)
+                    shadow = get_shadow(current_piece, game_board, colors)
                     piece_down_colliding = True
                 # Rotates the piece counter-clockwise
                 elif event.key in [pygame.K_z, pygame.K_RCTRL, pygame.K_LCTRL]:
                     current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations)
+                    shadow = get_shadow(current_piece, game_board, colors)
                     piece_down_colliding = True
                 # Holds the current piece
                 elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT, pygame.K_c]:
@@ -771,10 +791,13 @@ if __name__ == "__main__":
                                 future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
                                                                      rotations=0,colors=colors)
                             current_piece = generate_piece(piece_letter,colors=colors)
+                            shadow = get_shadow(current_piece, game_board, colors)
                         elif held_piece:
                             current_piece = generate_piece(held_piece,colors=colors)
+                            shadow = get_shadow(current_piece, game_board, colors)
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
+                        
                         if held_piece == "O" or held_piece == "I":
                             held_piece_arr = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,rotations=0,colors=colors)
                         else:
@@ -785,10 +808,10 @@ if __name__ == "__main__":
                 if not drop_collision_check(current_piece, game_board):
                     drop_piece(current_piece)
                     next_down_check = get_next_check(down_speed)
+                    next_check = get_next_check(speed)
                     score += 1
                     score_text = font.render(f"{score}", True, WHITE)
-                else:
-                    down_pressed = False
+
                 
         if drop_collision_check(current_piece, game_board) and piece_down_colliding:
             piece_stop_check = get_next_check(piece_stop_delay)
@@ -822,12 +845,15 @@ if __name__ == "__main__":
                 if future_piece == "O" or future_piece == "I":
                     future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
                                                          rotations=0,colors=colors)
+                    shadow = get_shadow(current_piece, game_board, colors)
                 else:
                     future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
                                                          rotations=0,colors=colors)
-                    
+                    shadow = get_shadow(current_piece, game_board, colors)
+                
                 # Create new piece
                 current_piece = generate_piece(piece_letter,colors=colors)
+                shadow = get_shadow(current_piece, game_board, colors)
                 
                 # If no space for new piece end game
                 if drop_collision_check(current_piece, game_board):
@@ -845,11 +871,10 @@ if __name__ == "__main__":
             last_move_rotation = False
             drop_piece(current_piece)
             next_check = get_next_check(speed)
-
         # Display board
         screen.blit(board_image, (0, 0))
-        # Display current piece
-        display_piece(current_piece, screen)
+        # Display current piece shadow
+        display_piece(shadow, screen)
         # Display held piece
         display_piece(held_piece_arr, screen)
         # Display the next piece
