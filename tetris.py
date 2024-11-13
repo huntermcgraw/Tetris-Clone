@@ -867,6 +867,7 @@ if __name__ == "__main__":
                     lines_text = font.render(f"{cleared_lines}", True, WHITE)
                     held_piece = None
                     held_piece_arr = None
+                    shadow = get_shadow(current_piece, game_board, colors)
         else:
             piece_down_colliding = True
         if Time > next_check and piece_down_colliding:
