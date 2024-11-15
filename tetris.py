@@ -6,12 +6,31 @@ import random
 import time
 import pygame
 import math
-UNIT = 48
+
+pygame.init()
+X_WIDTH = 1056
+Y_WIDTH = 960
+info = pygame.display.Info()
+# ratio of screen to image
+scale = (info.current_h-80)/Y_WIDTH
+
+UNIT = (48 * scale)
+
+temp = round(UNIT%1,8)
+print(scale, UNIT, temp)
+scale -= temp / 48
+
+UNIT = round(48 * scale)
+print(scale, UNIT, temp)
+
+
 piece_list = []
 # You don't need to define as global, the global keyword is for defining a variable in a function as global
 
 def load_pixel_color(pixel_path="images/Pixel.png"):
     WHITE = pygame.image.load(pixel_path)
+    w = WHITE.get_height()
+    WHITE = pygame.transform.scale(WHITE,(w*scale,w*scale))
     colors = {
         "RED": WHITE.copy(),
         "ORANGE": WHITE.copy(),
@@ -529,7 +548,7 @@ def get_x_y(unit):
         Parameters:
         unit (list[x(int),y(int),color]): the color is a pygame image that is displayed with a tint
     """
-    x, y = int((unit[0] - 160) / 48), int((unit[1]) / 48)
+    x, y = int((unit[0] - 160*scale) / UNIT), int((unit[1]) / UNIT)
     return x, y
 
 
@@ -653,13 +672,9 @@ def get_shadow(arr, board, colors):
     return placeholder
     
 if __name__ == "__main__":
-    # Initialize pygame
-    pygame.init()
-    # Create the screen and set dimensions
-    X_WIDTH = 1056
-    Y_WIDTH = 960
-    screen = pygame.display.set_mode((X_WIDTH, Y_WIDTH))
+    screen = pygame.display.set_mode((X_WIDTH*scale,Y_WIDTH*scale))
     board_image = pygame.image.load("images/Background.png")
+    board_image = pygame.transform.scale(board_image,(X_WIDTH*scale,Y_WIDTH*scale))
     # Set title
     pygame.display.set_caption("Tetris")
     # Adds the board background image
@@ -717,7 +732,7 @@ if __name__ == "__main__":
     down_pressed = False
     
     # Create all visual text and fields
-    font = pygame.font.Font('font.ttf', 40)
+    font = pygame.font.Font('font.ttf',size=round(scale*40))
     WHITE = (255, 255, 255)
     score_header = font.render(f"Score:", True, WHITE)
     score_text = font.render(f"{score}", True, WHITE)
@@ -887,13 +902,13 @@ if __name__ == "__main__":
         # Determines when the piece drops and drops or locks piece if something is below
         display_piece(current_piece, screen)
         # Display text fields
-        screen.blit(score_header, (825, 390))
-        screen.blit(level_header, (825, 435))
-        screen.blit(lines_header, (820, 535))
-        screen.blit(score_text, (915, 390))
-        screen.blit(level_text, (915, 435))
-        screen.blit(lines_text, (905 - int((math.log10(cleared_lines + 1)) * 6), 575))
-        screen.blit(held_piece_text, (70, 50))
-        screen.blit(future_piece_text, (840, 50))
+        screen.blit(score_header, (scale*825, scale*390))
+        screen.blit(level_header, (scale*825, scale*435))
+        screen.blit(lines_header, (scale*820, scale*535))
+        screen.blit(score_text, (scale*915, scale*390))
+        screen.blit(level_text, (scale*915, scale*435))
+        screen.blit(lines_text, (scale*905 - scale*int((math.log10(cleared_lines + 1)) * 6), 575))
+        screen.blit(held_piece_text, (scale*70, scale*50))
+        screen.blit(future_piece_text, (scale*840, scale*50))
         # Updates display to the screen
         pygame.display.update()
