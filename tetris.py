@@ -650,6 +650,7 @@ def t_spin_check(arr, board):
         count+=1
     if board[y-1][x-1] != 0:
         count+=1
+
     return count>=3
     
 def get_shadow(arr, board, colors):
@@ -729,7 +730,7 @@ def play_tetris(screen, scal):
     score = 0
     piece_stop_check = 0
     level = 1
-    piece_down_colliding = True 
+    piece_not_below = True 
     t_spin = False
     btb_tetris = False
     last_move_rotation = False
@@ -774,7 +775,7 @@ def play_tetris(screen, scal):
                         next_right_check = get_next_check(l_r_delay)
                         move_piece(current_piece, "right")
                         shadow = get_shadow(current_piece, game_board, colors)
-                        piece_down_colliding = False
+                        piece_not_below = True
                     right_pressed = True
                 # Moves piece to left if possible
                 elif event.key in [pygame.K_LEFT, pygame.K_a]:
@@ -782,7 +783,7 @@ def play_tetris(screen, scal):
                         next_left_check = get_next_check(l_r_delay)
                         move_piece(current_piece, "left")
                         shadow = get_shadow(current_piece, game_board, colors)
-                        piece_down_colliding = False
+                        piece_not_below = True
                     left_pressed = True
                 # Moves piece down if possible and resets drop timer
                 elif event.key in [pygame.K_DOWN, pygame.K_s]:
@@ -794,19 +795,20 @@ def play_tetris(screen, scal):
                         score += 2
                     score_text = font.render(f"{score}", True, WHITE)
                     piece_stop_check = 0
-                    piece_down_colliding = False
+                    piece_not_below = False
                     stop_piece(current_piece, game_board)
                     next_check = get_next_check(speed)
+                    last_move_rotation = False
                 # Rotates the piece clockwise
                 elif event.key in [pygame.K_x, pygame.K_UP]:
                     current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "clockwise", game_board, current_piece_rotations)
+                    piece_not_below = last_move_rotation
                     shadow = get_shadow(current_piece, game_board, colors)
-                    piece_down_colliding = True
                 # Rotates the piece counter-clockwise
                 elif event.key in [pygame.K_z, pygame.K_RCTRL, pygame.K_LCTRL]:
                     current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations)
+                    piece_not_below = last_move_rotation
                     shadow = get_shadow(current_piece, game_board, colors)
-                    piece_down_colliding = True
                 # Holds the current piece
                 elif event.key in [pygame.K_RSHIFT, pygame.K_LSHIFT, pygame.K_c]:
                     if not held_used:
@@ -840,6 +842,7 @@ def play_tetris(screen, scal):
                     next_check = get_next_check(speed)
                     score += 1
                     score_text = font.render(f"{score}", True, WHITE)
+                    last_move_rotation = False
         if not (left_pressed and right_pressed):
             if left_pressed:
                 if left_held:
@@ -848,7 +851,7 @@ def play_tetris(screen, scal):
                         if not left_collision_check(current_piece, game_board):
                             move_piece(current_piece, "left")
                             shadow = get_shadow(current_piece, game_board, colors)
-                            piece_down_colliding = False
+                            piece_not_below = True
                 elif Time > next_left_check:
                     left_held = True
             if right_pressed:
@@ -858,21 +861,21 @@ def play_tetris(screen, scal):
                         if not right_collision_check(current_piece, game_board):
                             move_piece(current_piece, "right")
                             shadow = get_shadow(current_piece, game_board, colors)
-                            piece_down_colliding = False
+                            piece_not_below = True
                 elif Time > next_right_check:
                     right_held = True
         
                 
-        if drop_collision_check(current_piece, game_board) and piece_down_colliding:
+        if drop_collision_check(current_piece, game_board) and piece_not_below:
             piece_stop_check = get_next_check(piece_stop_delay)
-            piece_down_colliding = False
+            piece_not_below = False
         elif drop_collision_check(current_piece, game_board):
             if Time > piece_stop_check:
                 # Places piece
                 if piece_letter == "T" and t_spin_check(current_piece, game_board) and last_move_rotation:
                     t_spin = True
-                    # colors = load_pixel_color(pixel2)
-                t_spin = False
+                    
+
                 held_used = False
                 
                 # Apply the piece to the board
@@ -883,6 +886,7 @@ def play_tetris(screen, scal):
                 # Update statistics
                 lines_text = font.render(f"{cleared_lines}", True, WHITE)
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin, level)
+                t_spin = False
                 level, speed, piece_stop_delay = update_difficulty(cleared_lines)
                 score_text = font.render(f"{score}", True, WHITE)
                 level_text = font.render(f"{level}", True, WHITE)
@@ -907,43 +911,28 @@ def play_tetris(screen, scal):
                 
                 # If no space for new piece end game
                 if drop_collision_check(current_piece, game_board):
-                    # game_board = create_board()
-                    # speed = 800
-                    # level = 1
-                    # level_text = font.render(f"{level}", True, WHITE)
-                    # score = 0
-                    # score_text = font.render(f"{score}", True, WHITE)
-                    # cleared_lines = 0
-                    # lines_text = font.render(f"{cleared_lines}", True, WHITE)
-                    # held_piece = None
-                    # held_piece_arr = None
-                    # shadow = get_shadow(current_piece, game_board, colors)
                     return score
         else:
-            piece_down_colliding = True
-        if Time > next_check and piece_down_colliding:
-            last_move_rotation = False
+            piece_not_below = True
+        if Time > next_check and piece_not_below:
             drop_piece(current_piece)
             next_check = get_next_check(speed)
         # Display board
         screen.blit(board_image, (0, 0))
-        # Display current piece shadow
-        display_piece(shadow, screen)
-        # Display held piece
+        
+        # Display held piece, next piece, current piece, and shadow
         display_piece(held_piece_arr, screen)
-        # Display the next piece
         display_piece(future_piece_arr, screen)
-        # Display all remaining pieces
-        display_board(game_board, screen)
-        # Determines when the piece drops and drops or locks piece if something is below
         display_piece(current_piece, screen)
+        display_piece(shadow, screen)
+        
         # Display text fields
         screen.blit(score_header, (scale*825, scale*390))
         screen.blit(level_header, (scale*825, scale*435))
         screen.blit(lines_header, (scale*820, scale*535))
         screen.blit(score_text, (scale*915, scale*390))
         screen.blit(level_text, (scale*915, scale*435))
-        screen.blit(lines_text, (scale*905 - scale*int((math.log10(cleared_lines + 1)) * 6), 575))
+        screen.blit(lines_text, (scale*905 - scale*int((math.log10(cleared_lines + 1)) * 6), scale*575))
         screen.blit(held_piece_text, (scale*70, scale*50))
         screen.blit(future_piece_text, (scale*840, scale*50))
         # Updates display to the screen

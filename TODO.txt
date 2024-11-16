@@ -1,7 +1,7 @@
 Tetris game TODO list
 
-[ ] Main screen visual/implementation
-[ ] 	Start game
+[X] Main screen visual/implementation
+[X] 	Start game
 [ ] 	High scores
 [ ] 	quit 
 [ ] 	settings
