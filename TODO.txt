@@ -15,11 +15,11 @@ Tetris game TODO list
 [ ] 	game over screen
 [ ] 		display game over/score
 [ ] 		prompt name for high score
-[ ] wall kick implementation
-[ ] hold piece visual
-[ ] next piece visual
-[ ] score/level visual
-[ ] level/difficulty increase ranges
-[ ] add piece lock delay separate from piece drop delay
-[ ] music?
+[X] wall kick implementation
+[X] hold piece visual
+[X] next piece visual
+[X] score/level visual
+[X] level/difficulty increase ranges
+[X] add piece lock delay separate from piece drop delay
+[X] music?
 		

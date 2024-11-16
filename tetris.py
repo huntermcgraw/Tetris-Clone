@@ -53,10 +53,10 @@ def next_piece(piece_list):
     if not piece_list:
         piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
         random.shuffle(piece_list)
-    return piece_list.pop(0)
+    return piece_list.pop(0), piece_list
 
 
-def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT, rotations=-1,colors=-1):
+def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT,colors=-1):
     """
         Takes a piece from next_piece or a piece from the user and generates the components 
         at the desiRED locations for that piece. Can also get prompted with x,y to change the
@@ -161,7 +161,7 @@ def create_board():
         Creates an array for the game objects to be stoRED in
         Parameters: (none)
     """
-    board = [[0 for _ in range(15)] for _ in range(20)]
+    board = [[0 for _ in range(16)] for _ in range(20)]
     for i, _ in enumerate(board):
         for j, _ in enumerate(board[i]):
             if i >= 19 or j <= 1 or j >= 12:
@@ -664,18 +664,17 @@ def get_shadow(arr, board, colors):
         drop_piece(placeholder)
     return placeholder
     
-if __name__ == "__main__":
-    screen = pygame.display.set_mode((X_WIDTH*scale,Y_WIDTH*scale))
+    
+def play_tetris(screen, scal):
+
     board_image = pygame.image.load("images/Background.png")
-    board_image = pygame.transform.scale(board_image,(X_WIDTH*scale,Y_WIDTH*scale))
+    w,h = board_image.get_width(),board_image.get_height()
+    board_image = pygame.transform.scale(board_image,(w*scale,h*scale))
     # Set title
     pygame.display.set_caption("Tetris")
     # Adds the board background image
     screen.blit(board_image, (0, 0))
-    # Plays tetris music on repeat
-    music = pygame.mixer.music.load("music.mp3")
-    pygame.mixer.music.play(-1)
-    pygame.mixer.music.set_volume(.1)
+
     # Add cute little icon
     icon = pygame.image.load('images/icon.png')
     pygame.display.set_icon(icon)
@@ -702,8 +701,8 @@ if __name__ == "__main__":
     
     # generate pieces to drop
     piece_list = []
-    piece_letter = next_piece(piece_list)
-    future_piece = next_piece(piece_list)
+    piece_letter, piece_list = next_piece(piece_list)
+    future_piece, piece_list = next_piece(piece_list)
     
     # paths for seperate images for pieces
     pixel = "images/Pixel.png"
@@ -715,10 +714,10 @@ if __name__ == "__main__":
     # generate the next piece in the desired location
     if future_piece == "O" or future_piece == "I":
         future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
-                                             rotations=0,colors=colors)
+                                             colors=colors)
     else:
         future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
-                                             rotations=0,colors=colors)
+                                             colors=colors)
         
     current_piece = generate_piece(piece_letter,colors=colors)
     shadow = get_shadow(current_piece, game_board, colors)
@@ -755,6 +754,7 @@ if __name__ == "__main__":
             # Closes the window if X is pressed
             if event.type == pygame.QUIT:
                 RUNNING = False
+                return -1
             # This section executes each command on button press
             # and not again until they are released
             if event.type == pygame.KEYUP:
@@ -813,13 +813,13 @@ if __name__ == "__main__":
                         if not held_piece:
                             held_piece = piece_letter
                             piece_letter = future_piece
-                            future_piece = next_piece(piece_list)
+                            future_piece, piece_list = next_piece(piece_list)
                             if future_piece == "O" or future_piece == "I":
                                 future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
-                                                                     rotations=0,colors=colors)
+                                                                     colors=colors)
                             else:
                                 future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
-                                                                     rotations=0,colors=colors)
+                                                                     colors=colors)
                             current_piece = generate_piece(piece_letter,colors=colors)
                             shadow = get_shadow(current_piece, game_board, colors)
                         elif held_piece:
@@ -828,9 +828,9 @@ if __name__ == "__main__":
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
                         if held_piece == "O" or held_piece == "I":
-                            held_piece_arr = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,rotations=0,colors=colors)
+                            held_piece_arr = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,colors=colors)
                         else:
-                            held_piece_arr = generate_piece(piece_name=held_piece,x=2.5*UNIT,y=5*UNIT,rotations=0,colors=colors)
+                            held_piece_arr = generate_piece(piece_name=held_piece,x=2.5*UNIT,y=5*UNIT,colors=colors)
             
         if down_pressed: 
             if Time > next_down_check:
@@ -889,16 +889,16 @@ if __name__ == "__main__":
                 
                 # Rotate pieces
                 piece_letter = future_piece
-                future_piece = next_piece(piece_list)
+                future_piece, piece_list = next_piece(piece_list)
                 
                 # Place new next piece in position
                 if future_piece == "O" or future_piece == "I":
                     future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
-                                                         rotations=0,colors=colors)
+                                                         colors=colors)
                     shadow = get_shadow(current_piece, game_board, colors)
                 else:
                     future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
-                                                         rotations=0,colors=colors)
+                                                         colors=colors)
                     shadow = get_shadow(current_piece, game_board, colors)
                 
                 # Create new piece
@@ -907,17 +907,18 @@ if __name__ == "__main__":
                 
                 # If no space for new piece end game
                 if drop_collision_check(current_piece, game_board):
-                    game_board = create_board()
-                    speed = 800
-                    level = 1
-                    level_text = font.render(f"{level}", True, WHITE)
-                    score = 0
-                    score_text = font.render(f"{score}", True, WHITE)
-                    cleared_lines = 0
-                    lines_text = font.render(f"{cleared_lines}", True, WHITE)
-                    held_piece = None
-                    held_piece_arr = None
-                    shadow = get_shadow(current_piece, game_board, colors)
+                    # game_board = create_board()
+                    # speed = 800
+                    # level = 1
+                    # level_text = font.render(f"{level}", True, WHITE)
+                    # score = 0
+                    # score_text = font.render(f"{score}", True, WHITE)
+                    # cleared_lines = 0
+                    # lines_text = font.render(f"{cleared_lines}", True, WHITE)
+                    # held_piece = None
+                    # held_piece_arr = None
+                    # shadow = get_shadow(current_piece, game_board, colors)
+                    return score
         else:
             piece_down_colliding = True
         if Time > next_check and piece_down_colliding:
@@ -947,3 +948,4 @@ if __name__ == "__main__":
         screen.blit(future_piece_text, (scale*840, scale*50))
         # Updates display to the screen
         pygame.display.update()
+    return score
