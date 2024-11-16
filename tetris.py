@@ -7,25 +7,19 @@ import time
 import pygame
 import math
 
+# initialize pygame
 pygame.init()
+# dimensions of the images for the game background
 X_WIDTH = 1056
 Y_WIDTH = 960
+# gets the system information for scaling
 info = pygame.display.Info()
 # ratio of screen to image
 scale = (info.current_h-80)/Y_WIDTH
-
+# Adjusts the scaling to the nearest whole devisor of unit
 UNIT = (48 * scale)
-
-temp = round(UNIT%1,8)
-print(scale, UNIT, temp)
-scale -= temp / 48
-
+scale -= round(UNIT%1,8) / 48
 UNIT = round(48 * scale)
-print(scale, UNIT, temp)
-
-
-piece_list = []
-# You don't need to define as global, the global keyword is for defining a variable in a function as global
 
 def load_pixel_color(pixel_path="images/Pixel.png"):
     WHITE = pygame.image.load(pixel_path)
@@ -51,12 +45,11 @@ def load_pixel_color(pixel_path="images/Pixel.png"):
     colors["SHADOW"].fill((50, 50, 50), special_flags=pygame.BLEND_MULT)
     return colors
 
-def next_piece():
+def next_piece(piece_list):
     """
         Determines the next piece to use. uses traditional tetris algorithm to prevent droughts:
         Parameters: (none)
     """
-    global piece_list
     if not piece_list:
         piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
         random.shuffle(piece_list)
@@ -694,11 +687,23 @@ if __name__ == "__main__":
     speed = 800
     next_check = get_next_check(speed)
     piece_stop_delay = speed
-    down_speed = 50
+
+    down_pressed = False
+    left_pressed = False
+    right_pressed = False
+    left_held = False
+    right_held = False
+    down_speed = 50 # ms
+    l_r_delay = 500 # ms
+    l_r_repeat = 50 # ms
     next_down_check = 0
+    next_left_check = 0
+    next_right_check = 0
+    
     # generate pieces to drop
-    piece_letter = next_piece()
-    future_piece = next_piece()
+    piece_list = []
+    piece_letter = next_piece(piece_list)
+    future_piece = next_piece(piece_list)
     
     # paths for seperate images for pieces
     pixel = "images/Pixel.png"
@@ -714,7 +719,7 @@ if __name__ == "__main__":
     else:
         future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
                                              rotations=0,colors=colors)
-
+        
     current_piece = generate_piece(piece_letter,colors=colors)
     shadow = get_shadow(current_piece, game_board, colors)
     held_piece = None
@@ -729,7 +734,6 @@ if __name__ == "__main__":
     t_spin = False
     btb_tetris = False
     last_move_rotation = False
-    down_pressed = False
     
     # Create all visual text and fields
     font = pygame.font.Font('font.ttf',size=round(scale*40))
@@ -754,21 +758,32 @@ if __name__ == "__main__":
             # This section executes each command on button press
             # and not again until they are released
             if event.type == pygame.KEYUP:
-                if event.key in [pygame.K_DOWN, pygame.K_d]:
+                if event.key in [pygame.K_DOWN, pygame.K_s]:
                     down_pressed = False
+                if event.key in [pygame.K_RIGHT, pygame.K_d]:
+                    right_pressed = False
+                    right_held = False
+                if event.key in [pygame.K_LEFT, pygame.K_a]:
+                    left_pressed = False
+                    left_held = False
             if event.type == pygame.KEYDOWN:
                 # Moves piece to right if possible
                 if event.key in [pygame.K_RIGHT, pygame.K_d]:
+                    right_pressed = True
                     if not right_collision_check(current_piece, game_board):
+                        next_right_check = get_next_check(l_r_delay)
                         move_piece(current_piece, "right")
                         shadow = get_shadow(current_piece, game_board, colors)
                         piece_down_colliding = False
+                    right_pressed = True
                 # Moves piece to left if possible
                 elif event.key in [pygame.K_LEFT, pygame.K_a]:
                     if not left_collision_check(current_piece, game_board):
+                        next_left_check = get_next_check(l_r_delay)
                         move_piece(current_piece, "left")
                         shadow = get_shadow(current_piece, game_board, colors)
                         piece_down_colliding = False
+                    left_pressed = True
                 # Moves piece down if possible and resets drop timer
                 elif event.key in [pygame.K_DOWN, pygame.K_s]:
                     down_pressed = True
@@ -798,7 +813,7 @@ if __name__ == "__main__":
                         if not held_piece:
                             held_piece = piece_letter
                             piece_letter = future_piece
-                            future_piece = next_piece()
+                            future_piece = next_piece(piece_list)
                             if future_piece == "O" or future_piece == "I":
                                 future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
                                                                      rotations=0,colors=colors)
@@ -812,7 +827,6 @@ if __name__ == "__main__":
                             shadow = get_shadow(current_piece, game_board, colors)
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
-                        
                         if held_piece == "O" or held_piece == "I":
                             held_piece_arr = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,rotations=0,colors=colors)
                         else:
@@ -826,7 +840,28 @@ if __name__ == "__main__":
                     next_check = get_next_check(speed)
                     score += 1
                     score_text = font.render(f"{score}", True, WHITE)
-
+        if not (left_pressed and right_pressed):
+            if left_pressed:
+                if left_held:
+                    if Time > next_left_check:
+                        next_left_check = get_next_check(l_r_repeat)
+                        if not left_collision_check(current_piece, game_board):
+                            move_piece(current_piece, "left")
+                            shadow = get_shadow(current_piece, game_board, colors)
+                            piece_down_colliding = False
+                elif Time > next_left_check:
+                    left_held = True
+            if right_pressed:
+                if right_held:
+                    if Time > next_right_check:
+                        next_right_check = get_next_check(l_r_repeat)
+                        if not right_collision_check(current_piece, game_board):
+                            move_piece(current_piece, "right")
+                            shadow = get_shadow(current_piece, game_board, colors)
+                            piece_down_colliding = False
+                elif Time > next_right_check:
+                    right_held = True
+        
                 
         if drop_collision_check(current_piece, game_board) and piece_down_colliding:
             piece_stop_check = get_next_check(piece_stop_delay)
@@ -854,7 +889,7 @@ if __name__ == "__main__":
                 
                 # Rotate pieces
                 piece_letter = future_piece
-                future_piece = next_piece()
+                future_piece = next_piece(piece_list)
                 
                 # Place new next piece in position
                 if future_piece == "O" or future_piece == "I":
