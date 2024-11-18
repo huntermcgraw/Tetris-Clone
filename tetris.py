@@ -582,6 +582,7 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
         _level: int 
     """
     if _t_spin:
+        print("t_spin")
         if _lines == 1:
             _score += (800 + _btb_tetris * 400)*_level
             _btb_tetris = True
@@ -872,7 +873,7 @@ def play_tetris(screen, scal):
                 if piece_letter == "T" and t_spin_check(current_piece, game_board) and last_move_rotation:
                     t_spin = True
                     # colors = load_pixel_color(pixel2)
-                t_spin = False
+                
                 held_used = False
                 
                 # Apply the piece to the board
@@ -883,6 +884,7 @@ def play_tetris(screen, scal):
                 # Update statistics
                 lines_text = font.render(f"{cleared_lines}", True, WHITE)
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin, level)
+                t_spin = False
                 level, speed, piece_stop_delay = update_difficulty(cleared_lines)
                 score_text = font.render(f"{score}", True, WHITE)
                 level_text = font.render(f"{level}", True, WHITE)
