@@ -23,19 +23,15 @@ UNIT = round(48 * scale)
 # unit = 48
 score = 0
 
-
 def play_clicked(screen):
     global score
     score = tetris.play_tetris(screen, scale)
 
-
 def settings_clicked(screen):
     pass
 
-
 def high_score_clicked(screen):
     pass
-
 
 if __name__ == "__main__":
     screen = pygame.display.set_mode((X_WIDTH * scale, Y_WIDTH * scale))

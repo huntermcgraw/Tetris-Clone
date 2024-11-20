@@ -474,7 +474,7 @@ def rotate(arr, direction, board, rotations):
             for i in arr:
                 i[0] += 1 * UNIT
     else:
-        if rotations == 0 or rotations == 1:
+        if rotations == 1 or rotations == 2:
             for i in arr:
                 i[0] += 1 * UNIT
         else:
@@ -628,17 +628,17 @@ def update_difficulty(cleared_lines):
         case 8:
             return check+1,133.33,800
         case 9:
-            return check+1,100,716.67
+            return check+1,100,800
         case 10,11,12:
-            return check+1,83.33,633.33
+            return check+1,83.33,716.67
         case 13,14,15:
-            return check+1,66.67,550
+            return check+1,66.67,633.33
         case 16,17,18:
-            return check+1,50,466.67
+            return check+1,50,550
         case 19,20,21,22,23,24,25,26,27,28:
-            return check+1,33.33,383.33
+            return check+1,33.33,466.67
         case _:
-            return check+1,16.67,300
+            return check+1,16.67,383.33
 
 def t_spin_check(arr, board):
     count = 0
