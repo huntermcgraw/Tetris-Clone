@@ -584,13 +584,13 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
     if _t_spin:
         print("t_spin")
         if _lines == 1:
-            _score += (800 + _btb_tetris * 400)*_level
+            _score += ((800 + _btb_tetris * 400)*_level)
             _btb_tetris = True
         elif _lines == 2:
-            _score += (1200 + _btb_tetris * 600)*_level
+            _score += ((1200 + _btb_tetris * 600)*_level)
             _btb_tetris = True
         elif _lines == 3:
-            _score += (1600 + _btb_tetris * 800)*_level
+            _score += ((1600 + _btb_tetris * 800)*_level)
             _btb_tetris = True
     elif _lines == 1:
         _score += 100*_level
@@ -602,7 +602,7 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
         _score += 500*_level
         _btb_tetris = False
     elif _lines == 4:
-        _score += (800 + _btb_tetris * 400)*_level
+        _score += ((800 + _btb_tetris * 400)*_level)
         _btb_tetris = True
     return _score, _btb_tetris
     
@@ -881,9 +881,11 @@ def play_tetris(screen, scal):
                 
                 # Apply the piece to the board
                 game_board = stop_piece(current_piece, game_board)
+                
                 # Remove full lines
                 game_board, lines = check_lines(game_board)
                 cleared_lines += lines
+                
                 # Update statistics
                 lines_text = font.render(f"{cleared_lines}", True, WHITE)
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin, level)
@@ -918,14 +920,16 @@ def play_tetris(screen, scal):
         if Time > next_check and piece_not_below:
             drop_piece(current_piece)
             next_check = get_next_check(speed)
+            
         # Display board
         screen.blit(board_image, (0, 0))
-        
+        display_board(game_board, screen)
+            
         # Display held piece, next piece, current piece, and shadow
         display_piece(held_piece_arr, screen)
         display_piece(future_piece_arr, screen)
-        display_piece(current_piece, screen)
         display_piece(shadow, screen)
+        display_piece(current_piece, screen)
         
         # Display text fields
         screen.blit(score_header, (scale*825, scale*390))
