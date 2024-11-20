@@ -582,6 +582,7 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
         _level: int 
     """
     if _t_spin:
+        print("t_spin")
         if _lines == 1:
             _score += (800 + _btb_tetris * 400)*_level
             _btb_tetris = True
@@ -874,8 +875,8 @@ def play_tetris(screen, scal):
                 # Places piece
                 if piece_letter == "T" and t_spin_check(current_piece, game_board) and last_move_rotation:
                     t_spin = True
-                    
-
+                    # colors = load_pixel_color(pixel2)
+                
                 held_used = False
                 
                 # Apply the piece to the board
