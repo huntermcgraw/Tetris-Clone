@@ -628,17 +628,17 @@ def update_difficulty(cleared_lines):
         case 8:
             return check+1,133.33,800
         case 9:
-            return check+1,100,800
-        case 10,11,12:
-            return check+1,83.33,716.67
-        case 13,14,15:
-            return check+1,66.67,633.33
-        case 16,17,18:
-            return check+1,50,550
-        case 19,20,21,22,23,24,25,26,27,28:
-            return check+1,33.33,466.67
+            return check+1,100,716.67
+        case 10 | 11 | 12:
+            return check+1,83.33,633.33
+        case 13 | 14 | 15:
+            return check+1,66.67,550
+        case 16 | 17 | 18:
+            return check+1,50,466.67
+        case 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28:
+            return check+1,33.33,383.33
         case _:
-            return check+1,16.67,383.33
+            return check+1,16.67,300
 
 def t_spin_check(arr, board):
     count = 0
@@ -727,7 +727,7 @@ def play_tetris(screen, scal):
     held_piece_arr = None
     held_used = False
     current_piece_rotations = 0
-    cleared_lines = 0
+    cleared_lines = 95
     score = 0
     piece_stop_check = 0
     level = 1
@@ -891,6 +891,7 @@ def play_tetris(screen, scal):
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin, level)
                 t_spin = False
                 level, speed, piece_stop_delay = update_difficulty(cleared_lines)
+                print(speed)
                 score_text = font.render(f"{score}", True, WHITE)
                 level_text = font.render(f"{level}", True, WHITE)
                 
