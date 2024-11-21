@@ -1,7 +1,6 @@
 """random is needed to shuffle the pieces to make them random
     Time will be needed to shift the pieces over the board
     pygame is our main game framework """
-import copy
 import random
 import time
 import pygame
@@ -45,13 +44,14 @@ def load_pixel_color(pixel_path="images/Pixel.png"):
     colors["SHADOW"].fill((50, 50, 50), special_flags=pygame.BLEND_MULT)
     return colors
 
+
 def next_piece(piece_list):
     """
         Determines the next piece to use. uses traditional tetris algorithm to prevent droughts:
         Parameters: (none)
     """
     if not piece_list:
-        piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
+        piece_list = ["I"]
         random.shuffle(piece_list)
     return piece_list.pop(0), piece_list
 
@@ -275,7 +275,7 @@ def review_check(arr, board):
     return False
 
 
-def rotate(arr, direction, board, rotations):
+def rotate(arr, direction, board, rotations, piece_name):
     """
         rotates the piece by doing reflections over y=x and y=-x respective to 
         the direction does not care about collision
@@ -285,8 +285,11 @@ def rotate(arr, direction, board, rotations):
         board (arr[arr[int]]): The game board
     """
     # excludes the O piece
-    if (arr[0][0] == arr[1][0] and arr[2][0] == arr[3][0]) and (arr[0][1] == arr[2][1] and arr[1][1] == arr[3][1]):
+    if (piece_name == "O"):
         return arr, rotations, False
+    for i in arr:
+        x,y = get_x_y(i)
+        print(x,y)
     array_prev = []
     master_x, master_y = get_x_y(arr[0])
     for i in arr:
@@ -312,9 +315,9 @@ def rotate(arr, direction, board, rotations):
     else:
         final_rotation = (-1 + rotations) % 4
     # separate I piece logic
-    if ((arr[0][0] == arr[1][0] and arr[1][0] == arr[2][0] and arr[2][0] == arr[3][0]) or
-            (arr[0][1] == arr[1][1] and arr[1][1] == arr[2][1] and   arr[2][1] == arr[3][1])):
+    if (piece_name == "I"):
         # base check for ["I"]
+        print(rotations,direction)
         if direction == "clockwise":
             if rotations == 0: 
                 for i in arr:
@@ -341,7 +344,12 @@ def rotate(arr, direction, board, rotations):
             elif rotations == 2:
                 for i in arr:
                     i[1] -= 1 * UNIT
+        for i in arr:
+            x,y = get_x_y(i)
+            print(x,y)
         if not review_check(arr, board):
+            print("first")
+            
             return arr, final_rotation, True
         # second check
         if direction == "clockwise":
@@ -371,6 +379,7 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[0] -= 2 * UNIT
         if not review_check(arr, board):
+            print("second")
             return arr, final_rotation, True 
         # third check
         if direction == "clockwise":
@@ -388,6 +397,7 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[0] += 3 * UNIT
         if not review_check(arr, board):
+            print("third")
             return arr, final_rotation, True 
         # fourth check
         if direction == "clockwise":
@@ -431,6 +441,7 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[1] += 1 * UNIT
         if not review_check(arr, board):
+            print("4th")
             return arr, final_rotation, True
         # fifth check
         if direction == "clockwise":
@@ -460,9 +471,12 @@ def rotate(arr, direction, board, rotations):
                 for i in arr:
                     i[1] -= 3 * UNIT
         if not review_check(arr, board):
+            print("5th")
             return arr, final_rotation, True
+        print("none")
         return array_prev, rotations, False
     # base check for ["L", "T", "S", "Z", "J"]
+    print(rotations,direction)
     if not review_check(arr, board):
         return arr, final_rotation, True 
     # second check
@@ -606,6 +620,7 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
         _btb_tetris = True
     return _score, _btb_tetris
     
+    
 def update_difficulty(cleared_lines):
     check = math.floor(cleared_lines/10)
     match check:
@@ -640,6 +655,7 @@ def update_difficulty(cleared_lines):
         case _:
             return check+1,16.67,300
 
+
 def t_spin_check(arr, board):
     count = 0
     x,y = get_x_y(arr[0])
@@ -654,6 +670,7 @@ def t_spin_check(arr, board):
 
     return count>=3
     
+    
 def get_shadow(arr, board, colors):
     placeholder = []
     for item in arr:
@@ -667,7 +684,7 @@ def get_shadow(arr, board, colors):
     return placeholder
     
     
-def play_tetris(screen, scal):
+def play_tetris(screen, pixel_type):
 
     board_image = pygame.image.load("images/Background.png")
     w,h = board_image.get_width(),board_image.get_height()
@@ -707,9 +724,15 @@ def play_tetris(screen, scal):
     future_piece, piece_list = next_piece(piece_list)
     
     # paths for seperate images for pieces
+    
     pixel = "images/Pixel.png"
-    pixel2 = "images/Pixel2.png"
-    pixel3 = "images/Pixel3.png"
+    if pixel_type == 1:
+        pixel = "images/Pixel.png"
+    elif pixel_type == 2:
+        pixel = "images/Pixel2.png"
+    else:
+        pixel = "images/Pixel3.png"
+
     # color the path selected and return the color dictionary
     colors = load_pixel_color(pixel)
     
@@ -727,7 +750,7 @@ def play_tetris(screen, scal):
     held_piece_arr = None
     held_used = False
     current_piece_rotations = 0
-    cleared_lines = 95
+    cleared_lines = 0
     score = 0
     piece_stop_check = 0
     level = 1
@@ -799,15 +822,16 @@ def play_tetris(screen, scal):
                     piece_not_below = False
                     stop_piece(current_piece, game_board)
                     next_check = get_next_check(speed)
+                    current_piece_rotations = 0
                     last_move_rotation = False
                 # Rotates the piece clockwise
                 elif event.key in [pygame.K_x, pygame.K_UP]:
-                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "clockwise", game_board, current_piece_rotations)
+                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "clockwise", game_board, current_piece_rotations,piece_letter)
                     piece_not_below = last_move_rotation
                     shadow = get_shadow(current_piece, game_board, colors)
                 # Rotates the piece counter-clockwise
                 elif event.key in [pygame.K_z, pygame.K_RCTRL, pygame.K_LCTRL]:
-                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations)
+                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations,piece_letter)
                     piece_not_below = last_move_rotation
                     shadow = get_shadow(current_piece, game_board, colors)
                 # Holds the current piece
@@ -823,7 +847,7 @@ def play_tetris(screen, scal):
                             else:
                                 future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
                                                                      colors=colors)
-                            current_piece = generate_piece(piece_letter,colors=colors)
+                            current_piece = generate_piece(piece_letter, colors=colors)
                             shadow = get_shadow(current_piece, game_board, colors)
                         elif held_piece:
                             current_piece = generate_piece(held_piece,colors=colors)
@@ -876,9 +900,8 @@ def play_tetris(screen, scal):
                 if piece_letter == "T" and t_spin_check(current_piece, game_board) and last_move_rotation:
                     t_spin = True
                     # colors = load_pixel_color(pixel2)
-                
                 held_used = False
-                
+                current_piece_rotations = 0
                 # Apply the piece to the board
                 game_board = stop_piece(current_piece, game_board)
                 
@@ -891,7 +914,6 @@ def play_tetris(screen, scal):
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin, level)
                 t_spin = False
                 level, speed, piece_stop_delay = update_difficulty(cleared_lines)
-                print(speed)
                 score_text = font.render(f"{score}", True, WHITE)
                 level_text = font.render(f"{level}", True, WHITE)
                 
