@@ -4,6 +4,7 @@ import pygame
 import time
 import pygame_widgets
 from pygame_widgets.button import Button
+import os
 
 # initialize pygame
 pygame.init()
@@ -11,10 +12,17 @@ pygame.init()
 # dimensions of the images for the game background
 X_WIDTH = 1056
 Y_WIDTH = 960
+
 # gets the system information for scaling
 info = pygame.display.Info()
+
+screen_width = info.current_w
+
+
 # ratio of screen to image
 scale = (info.current_h - 80) / Y_WIDTH
+temp = int((screen_width - X_WIDTH*scale) // 2)
+os.environ['SDL_VIDEO_WINDOW_POS'] = f"{(temp)},30"
 # Adjusts the scaling to the nearest whole devisor of unit
 UNIT = 48 * scale
 scale -= round(UNIT % 1, 8) / 48

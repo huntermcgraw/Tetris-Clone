@@ -51,7 +51,7 @@ def next_piece(piece_list):
         Parameters: (none)
     """
     if not piece_list:
-        piece_list = ["I"]
+        piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
         random.shuffle(piece_list)
     return piece_list.pop(0), piece_list
 
@@ -287,9 +287,6 @@ def rotate(arr, direction, board, rotations, piece_name):
     # excludes the O piece
     if (piece_name == "O"):
         return arr, rotations, False
-    for i in arr:
-        x,y = get_x_y(i)
-        print(x,y)
     array_prev = []
     master_x, master_y = get_x_y(arr[0])
     for i in arr:
@@ -317,7 +314,6 @@ def rotate(arr, direction, board, rotations, piece_name):
     # separate I piece logic
     if (piece_name == "I"):
         # base check for ["I"]
-        print(rotations,direction)
         if direction == "clockwise":
             if rotations == 0: 
                 for i in arr:
@@ -344,12 +340,7 @@ def rotate(arr, direction, board, rotations, piece_name):
             elif rotations == 2:
                 for i in arr:
                     i[1] -= 1 * UNIT
-        for i in arr:
-            x,y = get_x_y(i)
-            print(x,y)
-        if not review_check(arr, board):
-            print("first")
-            
+        if not review_check(arr, board): 
             return arr, final_rotation, True
         # second check
         if direction == "clockwise":
@@ -379,7 +370,6 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[0] -= 2 * UNIT
         if not review_check(arr, board):
-            print("second")
             return arr, final_rotation, True 
         # third check
         if direction == "clockwise":
@@ -397,7 +387,6 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[0] += 3 * UNIT
         if not review_check(arr, board):
-            print("third")
             return arr, final_rotation, True 
         # fourth check
         if direction == "clockwise":
@@ -441,7 +430,6 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[1] += 1 * UNIT
         if not review_check(arr, board):
-            print("4th")
             return arr, final_rotation, True
         # fifth check
         if direction == "clockwise":
@@ -471,12 +459,9 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[1] -= 3 * UNIT
         if not review_check(arr, board):
-            print("5th")
             return arr, final_rotation, True
-        print("none")
         return array_prev, rotations, False
     # base check for ["L", "T", "S", "Z", "J"]
-    print(rotations,direction)
     if not review_check(arr, board):
         return arr, final_rotation, True 
     # second check
@@ -596,7 +581,6 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
         _level: int 
     """
     if _t_spin:
-        print("t_spin")
         if _lines == 1:
             _score += ((800 + _btb_tetris * 400)*_level)
             _btb_tetris = True
