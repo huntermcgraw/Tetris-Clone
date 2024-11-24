@@ -171,12 +171,22 @@ if __name__ == "__main__":
             screen.blit(outline, (720*scale-5*scale, 624*scale-5*scale))
 
         high_score = get_high_score()
-
         if score > high_score:
-            high_score_text = font.render(f"HIGH: {score}", True, (255, 255, 255))
+            high_score = score
+        high_score_text = font.render(f"HIGH: {high_score}", True, (255, 255, 255))
+        if high_score > 999999:
+            high_score_x = 410 * scale - 5 * scale
+        elif high_score > 99999:
+            high_score_x = 420 * scale - 5 * scale
+        elif high_score > 9999:
+            high_score_x = 425 * scale - 5 * scale
+        elif high_score > 999:
+            high_score_x = 435 * scale - 5 * scale
         else:
-            high_score_text = font.render(f"HIGH: {high_score}", True, (255, 255, 255))
-        screen.blit(high_score_text, (420 * scale - 5 * scale, 724 * scale - 5 * scale))
+            high_score_x = 445 * scale - 5 * scale
+
+        screen.blit(high_score_text, (high_score_x, 724 * scale - 5 * scale))
+
         pygame_widgets.update(events)
         pygame.display.update()
 
