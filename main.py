@@ -42,6 +42,12 @@ def play_clicked(screen, type):
         score = tetris.play_tetris(screen, pixel_type)
     pixel_type = type
 
+    return score
+
+def settings_clicked(screen):
+    pass
+
+def get_high_score():
     with open("scores.csv", "r") as csv_file:
         csv_reader = csv.reader(csv_file)
         high_score = next(csv_reader)
@@ -50,12 +56,6 @@ def play_clicked(screen, type):
         with open("scores.csv", "w") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([score])
-
-def settings_clicked(screen):
-    pass
-
-def high_score_clicked(screen):
-    pass
 
 if __name__ == "__main__":
     flash_on = False
@@ -66,7 +66,8 @@ if __name__ == "__main__":
     game_over_image = pygame.image.load("images/GameOver.png")
     font = pygame.font.Font('font.ttf',size=round(scale*40))
     start_game_text = font.render("Press a block to play", True, (255,255,255))
-    high_score_text = font.render(f"HIGH: {int(high_score[0])}", True, (255, 255, 255))
+    score = int(high_score[0])
+    high_score_text = font.render(f"HIGH: {score}", True, (255, 255, 255))
     game_over_image = pygame.transform.scale(
         game_over_image, (X_WIDTH * scale, Y_WIDTH * scale)
     )
@@ -137,12 +138,16 @@ if __name__ == "__main__":
 
     RUNNING = True
     while RUNNING:
+
+        get_high_score()
+        pygame.display.flip()
         Time = time.time()
         if Time > flash_timer:
             flash_timer = tetris.get_next_check(flash_delay)
             flash_on = not flash_on
         events = pygame.event.get()
         for event in events:
+
             # Closes the window if X is pressed
             if event.type == pygame.QUIT:
                 RUNNING = False
@@ -162,8 +167,15 @@ if __name__ == "__main__":
         else:
             screen.blit(outline, (720*scale-5*scale, 624*scale-5*scale))
 
-        screen.blit(high_score_text, (420 * scale - 5 * scale, 724 * scale - 5 * scale))
+        with open("scores.csv", "r") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            high_score = next(csv_reader)
 
+        if score > int(high_score[0]):
+            high_score_text = font.render(f"HIGH: {score}", True, (255, 255, 255))
+        else:
+            high_score_text = font.render(f"HIGH: {int(high_score[0])}", True, (255, 255, 255))
+        screen.blit(high_score_text, (420 * scale - 5 * scale, 724 * scale - 5 * scale))
         pygame_widgets.update(events)
         pygame.display.update()
 
