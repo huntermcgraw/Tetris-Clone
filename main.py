@@ -57,6 +57,10 @@ def get_high_score():
             csv_writer = csv.writer(csv_file)
             csv_writer.writerow([score])
 
+        return score
+
+    return int(high_score[0])
+
 if __name__ == "__main__":
     flash_on = False
     flash_timer = 0
@@ -139,7 +143,6 @@ if __name__ == "__main__":
     RUNNING = True
     while RUNNING:
 
-        get_high_score()
         pygame.display.flip()
         Time = time.time()
         if Time > flash_timer:
@@ -167,14 +170,12 @@ if __name__ == "__main__":
         else:
             screen.blit(outline, (720*scale-5*scale, 624*scale-5*scale))
 
-        with open("scores.csv", "r") as csv_file:
-            csv_reader = csv.reader(csv_file)
-            high_score = next(csv_reader)
+        high_score = get_high_score()
 
-        if score > int(high_score[0]):
+        if score > high_score:
             high_score_text = font.render(f"HIGH: {score}", True, (255, 255, 255))
         else:
-            high_score_text = font.render(f"HIGH: {int(high_score[0])}", True, (255, 255, 255))
+            high_score_text = font.render(f"HIGH: {high_score}", True, (255, 255, 255))
         screen.blit(high_score_text, (420 * scale - 5 * scale, 724 * scale - 5 * scale))
         pygame_widgets.update(events)
         pygame.display.update()
