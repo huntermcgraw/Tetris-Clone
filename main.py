@@ -5,6 +5,7 @@ import time
 import pygame_widgets
 from pygame_widgets.button import Button
 import os
+import math
 
 # initialize pygame
 pygame.init()
@@ -185,7 +186,7 @@ if __name__ == "__main__":
         else:
             high_score_x = 445 * scale - 5 * scale
 
-        screen.blit(high_score_text, (high_score_x, 724 * scale - 5 * scale))
+        screen.blit(high_score_text, (scale*475 - scale*int((math.log10(high_score + 1)) * 6), 724 * scale - 5 * scale))
 
         pygame_widgets.update(events)
         pygame.display.update()
