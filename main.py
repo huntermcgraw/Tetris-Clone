@@ -85,7 +85,7 @@ if __name__ == "__main__":
     play_image = pygame.image.load("images/Pixel.png")
     play_image2 = pygame.image.load("images/Pixel2.png")
     play_image3 = pygame.image.load("images/Pixel3.png")
-    play_image4 = pygame.image.load("images/Pixel3.png")
+    play_image4 = pygame.image.load("images/Pixel4.png")
 
     w, h = play_image.get_width() * scale, play_image.get_height() * scale
     play_image = pygame.transform.scale(play_image, (w, h))

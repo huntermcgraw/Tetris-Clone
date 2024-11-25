@@ -714,8 +714,10 @@ def play_tetris(screen, pixel_type):
         pixel = "images/Pixel.png"
     elif pixel_type == 2:
         pixel = "images/Pixel2.png"
-    else:
+    elif pixel_type == 3:
         pixel = "images/Pixel3.png"
+    else:
+        pixel = "images/Pixel4.png"
 
     # color the path selected and return the color dictionary
     colors = load_pixel_color(pixel)
