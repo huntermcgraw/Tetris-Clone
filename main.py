@@ -87,12 +87,15 @@ if __name__ == "__main__":
     play_image2 = pygame.image.load("images/Pixel2.png")
     play_image3 = pygame.image.load("images/Pixel3.png")
     play_image4 = pygame.image.load("images/Pixel4.png")
+    settings = pygame.image.load("images/Settings.png")
+
 
     w, h = play_image.get_width() * scale, play_image.get_height() * scale
     play_image = pygame.transform.scale(play_image, (w, h))
     play_image2 = pygame.transform.scale(play_image2, (w, h))
     play_image3 = pygame.transform.scale(play_image3, (w, h))
     play_image4 = pygame.transform.scale(play_image4, (w, h))
+
     play_button = Button(
         screen,
         288 * scale,
@@ -137,7 +140,7 @@ if __name__ == "__main__":
     # Adds the board background image
 
     # Plays tetris music on repeat
-    music = pygame.mixer.music.load("music.mp3")
+    music = pygame.mixer.music.load("Blokken.mp3")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.1)
 
