@@ -36,6 +36,7 @@ UNIT = round(48 * scale)
 # unit = 48
 score = 0
 pixel_type = 1
+music_on = True
 def play_clicked(screen, type):
     global pixel_type
     global score
@@ -45,8 +46,18 @@ def play_clicked(screen, type):
 
     return score
 
-def settings_clicked(screen):
-    pass
+
+def toggle_sound():
+    global music_on
+    music_on = not music_on
+    if music_on:
+        sound_button.image = sound_button_on
+        pygame.mixer.music.set_volume(0.1)
+        return
+    sound_button.image = sound_button_off
+    pygame.mixer.music.set_volume(0)
+    return
+
 
 def get_high_score():
     with open("scores.csv", "r") as csv_file:
@@ -87,9 +98,9 @@ if __name__ == "__main__":
     play_image2 = pygame.image.load("images/Pixel2.png")
     play_image3 = pygame.image.load("images/Pixel3.png")
     play_image4 = pygame.image.load("images/Pixel4.png")
-    settings = pygame.image.load("images/Settings.png")
-
-
+    sound_button_on = pygame.image.load("images/Settings.png")
+    sound_button_off = pygame.image.load("images/Pixel4.png")
+    
     w, h = play_image.get_width() * scale, play_image.get_height() * scale
     play_image = pygame.transform.scale(play_image, (w, h))
     play_image2 = pygame.transform.scale(play_image2, (w, h))
@@ -132,6 +143,16 @@ if __name__ == "__main__":
         image=play_image4,
         onClick=lambda: play_clicked(screen,4),
     )
+    sound_button = Button(
+        screen,
+        960 * scale,
+        864 * scale,
+        w,
+        h,
+        image=sound_button_on,
+        onClick=lambda: 
+            toggle_sound(),
+    )
     # Add cute little icon
     icon = pygame.image.load("images/icon.png")
     pygame.display.set_icon(icon)
@@ -143,7 +164,8 @@ if __name__ == "__main__":
     music = pygame.mixer.music.load("Blokken.mp3")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.1)
-
+    music_on = True
+    
     RUNNING = True
     while RUNNING:
 
