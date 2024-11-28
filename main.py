@@ -49,14 +49,14 @@ def play_clicked(play_screen, new_type):
     return score
 
 
-def toggle_sound():
+def toggle_sound(button, button_on, button_off):
     global music_on
     music_on = not music_on
     if music_on:
-        sound_button.image = sound_button_on
+        button.image = button_on
         pygame.mixer.music.set_volume(0.1)
         return
-    sound_button.image = sound_button_off
+    button.image = button_off
     pygame.mixer.music.set_volume(0)
     return
 
@@ -154,7 +154,7 @@ if __name__ == "__main__":
         int(h),
         image=sound_button_on,
         onClick=lambda:
-            toggle_sound(),
+            toggle_sound(sound_button, sound_button_on, sound_button_off),
     )
     # Add cute little icon
     icon = pygame.image.load("images/icon.png")
