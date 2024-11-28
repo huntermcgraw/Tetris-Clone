@@ -15,15 +15,16 @@ Y_WIDTH = 960
 info = pygame.display.Info()
 # ratio of screen to image
 scale = (info.current_h-80)/Y_WIDTH
-# Adjusts the scaling to the nearest whole devisor of unit
+# Adjusts the scaling to the nearest whole divisor of unit
 UNIT = (48 * scale)
-scale -= round(UNIT%1,8) / 48
+scale -= round(UNIT % 1, 8) / 48
 UNIT = round(48 * scale)
+
 
 def load_pixel_color(pixel_path="images/Pixel.png"):
     WHITE = pygame.image.load(pixel_path)
     w = WHITE.get_height()
-    WHITE = pygame.transform.scale(WHITE,(w*scale,w*scale))
+    WHITE = pygame.transform.scale(WHITE, (w*scale, w*scale))
     colors = {
         "RED": WHITE.copy(),
         "ORANGE": WHITE.copy(),
@@ -56,14 +57,14 @@ def next_piece(piece_list):
     return piece_list.pop(0), piece_list
 
 
-def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT,colors=-1):
+def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT, colors=None):
     """
-        Takes a piece from next_piece or a piece from the user and generates the components 
+        Takes a piece from next_piece or a piece from the user and generates the components
         at the desiRED locations for that piece. Can also get prompted with x,y to change the
         starting position of the home piece.
         Parameters:
         piece_name (str): one of these strings ["L", "T", "S", "Z", "I", "O", "J"]
-        x (int): the position in pixels of the x coordinate 
+        x (int): the position in pixels of the x coordinate
         y (int): the position in pixels of the y coordinate
     """
     RED = colors["RED"]
@@ -277,7 +278,7 @@ def review_check(arr, board):
 
 def rotate(arr, direction, board, rotations, piece_name):
     """
-        rotates the piece by doing reflections over y=x and y=-x respective to 
+        rotates the piece by doing reflections over y=x and y=-x respective to
         the direction does not care about collision
         Parameters:
         arr (arr[arr[int]]): The current piece
@@ -285,7 +286,7 @@ def rotate(arr, direction, board, rotations, piece_name):
         board (arr[arr[int]]): The game board
     """
     # excludes the O piece
-    if (piece_name == "O"):
+    if piece_name == "O":
         return arr, rotations, False
     array_prev = []
     master_x, master_y = get_x_y(arr[0])
@@ -305,46 +306,46 @@ def rotate(arr, direction, board, rotations, piece_name):
             i[0] = (x1 + master_x) * UNIT
             i[1] = (y1 + master_y) * UNIT
         i[0] += 4 * UNIT
-        
+
     # change rotations
     if direction == "clockwise":
         final_rotation = (1 + rotations) % 4
     else:
         final_rotation = (-1 + rotations) % 4
     # separate I piece logic
-    if (piece_name == "I"):
+    if piece_name == "I":
         # base check for ["I"]
         if direction == "clockwise":
-            if rotations == 0: 
+            if rotations == 0:
                 for i in arr:
                     i[0] += 1 * UNIT
             elif rotations == 2:
                 for i in arr:
                     i[0] -= 1 * UNIT
-            if rotations == 1: 
+            if rotations == 1:
                 for i in arr:
                     i[1] += 1 * UNIT
             elif rotations == 3:
                 for i in arr:
                     i[1] -= 1 * UNIT
         else:
-            if rotations == 3: 
+            if rotations == 3:
                 for i in arr:
                     i[0] += 1 * UNIT
             elif rotations == 1:
                 for i in arr:
                     i[0] -= 1 * UNIT
-            if rotations == 0: 
+            if rotations == 0:
                 for i in arr:
                     i[1] += 1 * UNIT
             elif rotations == 2:
                 for i in arr:
                     i[1] -= 1 * UNIT
-        if not review_check(arr, board): 
+        if not review_check(arr, board):
             return arr, final_rotation, True
         # second check
         if direction == "clockwise":
-            if rotations == 0: 
+            if rotations == 0:
                 for i in arr:
                     i[0] -= 2 * UNIT
             elif rotations == 1:
@@ -357,7 +358,7 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[0] += 1 * UNIT
         else:
-            if rotations == 0: 
+            if rotations == 0:
                 for i in arr:
                     i[0] -= 1 * UNIT
             elif rotations == 1:
@@ -370,7 +371,7 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[0] -= 2 * UNIT
         if not review_check(arr, board):
-            return arr, final_rotation, True 
+            return arr, final_rotation, True
         # third check
         if direction == "clockwise":
             if rotations == 0 or rotations == 1:
@@ -387,7 +388,7 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[0] += 3 * UNIT
         if not review_check(arr, board):
-            return arr, final_rotation, True 
+            return arr, final_rotation, True
         # fourth check
         if direction == "clockwise":
             if rotations == 0 or rotations == 1:
@@ -404,7 +405,7 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[0] -= 3 * UNIT
         if direction == "clockwise":
-            if rotations == 0: 
+            if rotations == 0:
                 for i in arr:
                     i[1] += 1 * UNIT
             elif rotations == 1:
@@ -417,7 +418,7 @@ def rotate(arr, direction, board, rotations, piece_name):
                 for i in arr:
                     i[1] += 2 * UNIT
         else:
-            if rotations == 0: 
+            if rotations == 0:
                 for i in arr:
                     i[1] -= 2 * UNIT
             elif rotations == 1:
@@ -463,7 +464,7 @@ def rotate(arr, direction, board, rotations, piece_name):
         return array_prev, rotations, False
     # base check for ["L", "T", "S", "Z", "J"]
     if not review_check(arr, board):
-        return arr, final_rotation, True 
+        return arr, final_rotation, True
     # second check
     if direction == "clockwise":
         if rotations == 0 or rotations == 3:
@@ -535,7 +536,7 @@ def rotate(arr, direction, board, rotations, piece_name):
 
 def get_x_y(unit):
     """
-        retrieves the x and y coordinate from the position on screen. this is where 
+        retrieves the x and y coordinate from the position on screen. this is where
         they are on the board array
         Parameters:
         unit (list[x(int),y(int),color]): the color is a pygame image that is displayed with a tint
@@ -546,7 +547,7 @@ def get_x_y(unit):
 
 def display_piece(arr, display_screen):
     """
-        prins the game piece to the board this is separate from the board array and 
+        prints the game piece to the board this is separate from the board array and
         is not contained in the array
         this function displays the current piece over the board.
         Parameters:
@@ -578,7 +579,7 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
         _btb_tetris: bool
         _score: int
         _t_spin: bool
-        _level: int 
+        _level: int
     """
     if _t_spin:
         if _lines == 1:
@@ -603,76 +604,76 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
         _score += ((800 + _btb_tetris * 400)*_level)
         _btb_tetris = True
     return _score, _btb_tetris
-    
-    
+
+
 def update_difficulty(cleared_lines):
     check = math.floor(cleared_lines/10)
     match check:
         case 0:
-            return check+1,800,800
+            return check+1, 800, 800
         case 1:
-            return check+1,716.67,800
+            return check+1, 716.67, 800
         case 2:
-            return check+1,633.33,800
+            return check+1, 633.33, 800
         case 3:
-            return check+1,550,800
+            return check+1, 550, 800
         case 4:
-            return check+1,466.67,800
+            return check+1, 466.67, 800
         case 5:
-            return check+1,383.33,800
+            return check+1, 383.33, 800
         case 6:
-            return check+1,300,800
+            return check+1, 300, 800
         case 7:
-            return check+1,216.67,800
+            return check+1, 216.67, 800
         case 8:
-            return check+1,133.33,800
+            return check+1, 133.33, 800
         case 9:
-            return check+1,100,716.67
+            return check+1, 100, 716.67
         case 10 | 11 | 12:
-            return check+1,83.33,633.33
+            return check+1, 83.33, 633.33
         case 13 | 14 | 15:
-            return check+1,66.67,550
+            return check+1, 66.67, 550
         case 16 | 17 | 18:
-            return check+1,50,466.67
+            return check+1, 50, 466.67
         case 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28:
-            return check+1,33.33,383.33
+            return check+1, 33.33, 383.33
         case _:
-            return check+1,16.67,300
+            return check+1, 16.67, 300
 
 
 def t_spin_check(arr, board):
     count = 0
-    x,y = get_x_y(arr[0])
+    x, y = get_x_y(arr[0])
     if board[y+1][x+1] != 0:
-        count+=1  
+        count += 1
     if board[y-1][x+1] != 0:
-        count+=1
+        count += 1
     if board[y+1][x-1] != 0:
-        count+=1
+        count += 1
     if board[y-1][x-1] != 0:
-        count+=1
+        count += 1
 
-    return count>=3
-    
-    
+    return count >= 3
+
+
 def get_shadow(arr, board, colors):
     placeholder = []
     for item in arr:
         x, y, surface = item
-        new_surface = surface.copy() 
+        new_surface = surface.copy()
         placeholder.append([x, y, new_surface])
     for i in placeholder:
         i[2] = colors["SHADOW"]
     while not drop_collision_check(placeholder, board):
         drop_piece(placeholder)
     return placeholder
-    
-    
+
+
 def play_tetris(screen, pixel_type):
 
     board_image = pygame.image.load("images/Background.png")
-    w,h = board_image.get_width(),board_image.get_height()
-    board_image = pygame.transform.scale(board_image,(w*scale,h*scale))
+    w, h = board_image.get_width(), board_image.get_height()
+    board_image = pygame.transform.scale(board_image, (w*scale, h*scale))
     # Set title
     pygame.display.set_caption("Tetris")
     # Adds the board background image
@@ -684,7 +685,7 @@ def play_tetris(screen, pixel_type):
     # representation of board for background logic 0 is
     # empty 1 is boarder and lists are the tetris blocks
     game_board = create_board()
-    
+
     # default drop speed in (ms) and time events for dropping and locking pieces
     speed = 800
     next_check = get_next_check(speed)
@@ -695,21 +696,20 @@ def play_tetris(screen, pixel_type):
     right_pressed = False
     left_held = False
     right_held = False
-    down_speed = 50 # ms
-    l_r_delay = 500 # ms
-    l_r_repeat = 50 # ms
+    down_speed = 50  # ms
+    l_r_delay = 500  # ms
+    l_r_repeat = 50  # ms
     next_down_check = 0
     next_left_check = 0
     next_right_check = 0
-    
+
     # generate pieces to drop
     piece_list = []
     piece_letter, piece_list = next_piece(piece_list)
     future_piece, piece_list = next_piece(piece_list)
-    
-    # paths for seperate images for pieces
-    
-    pixel = "images/Pixel.png"
+
+    # paths for separate images for pieces
+
     if pixel_type == 1:
         pixel = "images/Pixel.png"
     elif pixel_type == 2:
@@ -721,16 +721,14 @@ def play_tetris(screen, pixel_type):
 
     # color the path selected and return the color dictionary
     colors = load_pixel_color(pixel)
-    
+
     # generate the next piece in the desired location
     if future_piece == "O" or future_piece == "I":
-        future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
-                                             colors=colors)
+        future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT, colors=colors)
     else:
-        future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
-                                             colors=colors)
-        
-    current_piece = generate_piece(piece_letter,colors=colors)
+        future_piece_arr = generate_piece(piece_name=future_piece, x=int(18.5 * UNIT), y=5 * UNIT, colors=colors)
+
+    current_piece = generate_piece(piece_letter, colors=colors)
     shadow = get_shadow(current_piece, game_board, colors)
     held_piece = None
     held_piece_arr = None
@@ -740,13 +738,13 @@ def play_tetris(screen, pixel_type):
     score = 0
     piece_stop_check = 0
     level = 1
-    piece_not_below = True 
+    piece_not_below = True
     t_spin = False
     btb_tetris = False
     last_move_rotation = False
-    
+
     # Create all visual text and fields
-    font = pygame.font.Font('font.ttf',size=round(scale*40))
+    font = pygame.font.Font('font.ttf', size=round(scale*40))
     WHITE = (255, 255, 255)
     score_header = font.render(f"Score:", True, WHITE)
     score_text = font.render(f"{score}", True, WHITE)
@@ -756,7 +754,7 @@ def play_tetris(screen, pixel_type):
     lines_text = font.render(f"{cleared_lines}", True, WHITE)
     held_piece_text = font.render("Held Piece", True, WHITE)
     future_piece_text = font.render("Next Piece", True, WHITE)
-    
+
     # Main game loop
     RUNNING = True
     while RUNNING:
@@ -765,7 +763,6 @@ def play_tetris(screen, pixel_type):
             # Closes the window if X is pressed
             if event.type == pygame.QUIT:
                 RUNNING = False
-                return -1
             # This section executes each command on button press
             # and not again until they are released
             if event.type == pygame.KEYUP:
@@ -786,7 +783,6 @@ def play_tetris(screen, pixel_type):
                         move_piece(current_piece, "right")
                         shadow = get_shadow(current_piece, game_board, colors)
                         piece_not_below = True
-                    right_pressed = True
                 # Moves piece to left if possible
                 elif event.key in [pygame.K_LEFT, pygame.K_a]:
                     if not left_collision_check(current_piece, game_board):
@@ -812,12 +808,12 @@ def play_tetris(screen, pixel_type):
                     last_move_rotation = False
                 # Rotates the piece clockwise
                 elif event.key in [pygame.K_x, pygame.K_UP]:
-                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "clockwise", game_board, current_piece_rotations,piece_letter)
+                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "clockwise", game_board, current_piece_rotations, piece_letter)
                     piece_not_below = last_move_rotation
                     shadow = get_shadow(current_piece, game_board, colors)
                 # Rotates the piece counter-clockwise
                 elif event.key in [pygame.K_z, pygame.K_RCTRL, pygame.K_LCTRL]:
-                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations,piece_letter)
+                    current_piece, current_piece_rotations, last_move_rotation = rotate(current_piece, "counter-clockwise", game_board, current_piece_rotations, piece_letter)
                     piece_not_below = last_move_rotation
                     shadow = get_shadow(current_piece, game_board, colors)
                 # Holds the current piece
@@ -828,24 +824,22 @@ def play_tetris(screen, pixel_type):
                             piece_letter = future_piece
                             future_piece, piece_list = next_piece(piece_list)
                             if future_piece == "O" or future_piece == "I":
-                                future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
-                                                                     colors=colors)
+                                future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT, colors=colors)
                             else:
-                                future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
-                                                                     colors=colors)
+                                future_piece_arr = generate_piece(piece_name=future_piece, x=int(18.5 * UNIT), y=5 * UNIT, colors=colors)
                             current_piece = generate_piece(piece_letter, colors=colors)
                             shadow = get_shadow(current_piece, game_board, colors)
                         elif held_piece:
-                            current_piece = generate_piece(held_piece,colors=colors)
+                            current_piece = generate_piece(held_piece, colors=colors)
                             shadow = get_shadow(current_piece, game_board, colors)
                             piece_letter, held_piece = held_piece, piece_letter
                         held_used = True
                         if held_piece == "O" or held_piece == "I":
-                            held_piece_arr = generate_piece(piece_name=held_piece,x=2*UNIT,y=5*UNIT,colors=colors)
+                            held_piece_arr = generate_piece(piece_name=held_piece, x=2*UNIT, y=5*UNIT, colors=colors)
                         else:
-                            held_piece_arr = generate_piece(piece_name=held_piece,x=2.5*UNIT,y=5*UNIT,colors=colors)
-            
-        if down_pressed: 
+                            held_piece_arr = generate_piece(piece_name=held_piece, x=int(2.5*UNIT), y=5*UNIT, colors=colors)
+
+        if down_pressed:
             if Time > next_down_check:
                 if not drop_collision_check(current_piece, game_board):
                     drop_piece(current_piece)
@@ -875,8 +869,7 @@ def play_tetris(screen, pixel_type):
                             piece_not_below = True
                 elif Time > next_right_check:
                     right_held = True
-        
-                
+
         if drop_collision_check(current_piece, game_board) and piece_not_below:
             piece_stop_check = get_next_check(piece_stop_delay)
             piece_not_below = False
@@ -890,11 +883,11 @@ def play_tetris(screen, pixel_type):
                 current_piece_rotations = 0
                 # Apply the piece to the board
                 game_board = stop_piece(current_piece, game_board)
-                
+
                 # Remove full lines
                 game_board, lines = check_lines(game_board)
                 cleared_lines += lines
-                
+
                 # Update statistics
                 lines_text = font.render(f"{cleared_lines}", True, WHITE)
                 score, btb_tetris = update_score(lines, btb_tetris, score, t_spin, level)
@@ -902,25 +895,21 @@ def play_tetris(screen, pixel_type):
                 level, speed, piece_stop_delay = update_difficulty(cleared_lines)
                 score_text = font.render(f"{score}", True, WHITE)
                 level_text = font.render(f"{level}", True, WHITE)
-                
+
                 # Rotate pieces
                 piece_letter = future_piece
                 future_piece, piece_list = next_piece(piece_list)
-                
+
                 # Place new next piece in position
                 if future_piece == "O" or future_piece == "I":
-                    future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT,
-                                                         colors=colors)
-                    shadow = get_shadow(current_piece, game_board, colors)
+                    future_piece_arr = generate_piece(piece_name=future_piece, x=18 * UNIT, y=5 * UNIT, colors=colors)
                 else:
-                    future_piece_arr = generate_piece(piece_name=future_piece, x=18.5 * UNIT, y=5 * UNIT,
-                                                         colors=colors)
-                    shadow = get_shadow(current_piece, game_board, colors)
-                
+                    future_piece_arr = generate_piece(piece_name=future_piece, x=int(18.5 * UNIT), y=5 * UNIT, colors=colors)
+
                 # Create new piece
-                current_piece = generate_piece(piece_letter,colors=colors)
+                current_piece = generate_piece(piece_letter, colors=colors)
                 shadow = get_shadow(current_piece, game_board, colors)
-                
+
                 # If no space for new piece end game
                 if drop_collision_check(current_piece, game_board):
                     return score
@@ -929,17 +918,17 @@ def play_tetris(screen, pixel_type):
         if Time > next_check and piece_not_below:
             drop_piece(current_piece)
             next_check = get_next_check(speed)
-            
+
         # Display board
         screen.blit(board_image, (0, 0))
         display_board(game_board, screen)
-            
+
         # Display held piece, next piece, current piece, and shadow
         display_piece(held_piece_arr, screen)
         display_piece(future_piece_arr, screen)
         display_piece(shadow, screen)
         display_piece(current_piece, screen)
-        
+
         # Display text fields
         screen.blit(score_header, (scale*825, scale*390))
         screen.blit(level_header, (scale*825, scale*435))

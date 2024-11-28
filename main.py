@@ -26,8 +26,8 @@ with open("scores.csv", "r") as csv_file:
 # ratio of screen to image
 scale = (info.current_h - 80) / Y_WIDTH
 temp = int((screen_width - X_WIDTH*scale) // 2)
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{(temp)},30"
-# Adjusts the scaling to the nearest whole devisor of unit
+os.environ['SDL_VIDEO_WINDOW_POS'] = f"{temp},30"
+# Adjusts the scaling to the nearest whole divisor of unit
 UNIT = 48 * scale
 scale -= round(UNIT % 1, 8) / 48
 UNIT = round(48 * scale)
@@ -37,12 +37,14 @@ UNIT = round(48 * scale)
 score = 0
 pixel_type = 1
 music_on = True
-def play_clicked(screen, type):
+
+
+def play_clicked(play_screen, new_type):
     global pixel_type
     global score
-    if pixel_type == type:
-        score = tetris.play_tetris(screen, pixel_type)
-    pixel_type = type
+    if pixel_type == new_type:
+        score = tetris.play_tetris(play_screen, pixel_type)
+    pixel_type = new_type
 
     return score
 
@@ -60,18 +62,19 @@ def toggle_sound():
 
 
 def get_high_score():
-    with open("scores.csv", "r") as csv_file:
-        csv_reader = csv.reader(csv_file)
-        high_score = next(csv_reader)
+    with open("scores.csv", "r") as file:
+        reader = csv.reader(file)
+        new_high_score = next(reader)
 
-    if score > int(high_score[0]):
-        with open("scores.csv", "w") as csv_file:
-            csv_writer = csv.writer(csv_file)
+    if score > int(new_high_score[0]):
+        with open("scores.csv", "w") as file:
+            csv_writer = csv.writer(file)
             csv_writer.writerow([score])
 
         return score
 
-    return int(high_score[0])
+    return int(new_high_score[0])
+
 
 if __name__ == "__main__":
     flash_on = False
@@ -80,8 +83,8 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((X_WIDTH * scale, Y_WIDTH * scale))
     start_image = pygame.image.load("images/StartScreen.png")
     game_over_image = pygame.image.load("images/GameOver.png")
-    font = pygame.font.Font('font.ttf',size=round(scale*40))
-    start_game_text = font.render("Press a block to play", True, (255,255,255))
+    font = pygame.font.Font('font.ttf', size=round(scale*40))
+    start_game_text = font.render("Press a block to play", True, (255, 255, 255))
     score = int(high_score[0])
     high_score_text = font.render(f"HIGH: {score}", True, (255, 255, 255))
     game_over_image = pygame.transform.scale(
@@ -93,14 +96,14 @@ if __name__ == "__main__":
     outline = pygame.image.load("images/Pixel.png")
     outline.fill((0, 255, 0), special_flags=pygame.BLEND_MULT)
     w = outline.get_height()
-    outline = pygame.transform.scale(outline,(w*scale*1.24,w*scale*1.24))
+    outline = pygame.transform.scale(outline, (w*scale*1.24, w*scale*1.24))
     play_image = pygame.image.load("images/Pixel.png")
     play_image2 = pygame.image.load("images/Pixel2.png")
     play_image3 = pygame.image.load("images/Pixel3.png")
     play_image4 = pygame.image.load("images/Pixel4.png")
     sound_button_on = pygame.image.load("images/Settings.png")
     sound_button_off = pygame.image.load("images/Pixel4.png")
-    
+
     w, h = play_image.get_width() * scale, play_image.get_height() * scale
     play_image = pygame.transform.scale(play_image, (w, h))
     play_image2 = pygame.transform.scale(play_image2, (w, h))
@@ -109,48 +112,48 @@ if __name__ == "__main__":
 
     play_button = Button(
         screen,
-        288 * scale,
-        624 * scale,
-        w,
-        h,
+        int(288 * scale),
+        int(624 * scale),
+        int(w),
+        int(h),
         image=play_image,
-        onClick=lambda: play_clicked(screen,1),
+        onClick=lambda: play_clicked(screen, 1),
     )
     play_button2 = Button(
         screen,
-        432 * scale,
-        624 * scale,
-        w,
-        h,
+        int(432 * scale),
+        int(624 * scale),
+        int(w),
+        int(h),
         image=play_image2,
-        onClick=lambda: play_clicked(screen,2),
+        onClick=lambda: play_clicked(screen, 2),
     )
     play_button3 = Button(
         screen,
-        576 * scale,
-        624 * scale,
-        w,
-        h,
+        int(576 * scale),
+        int(624 * scale),
+        int(w),
+        int(h),
         image=play_image3,
-        onClick=lambda: play_clicked(screen,3),
+        onClick=lambda: play_clicked(screen, 3),
     )
     play_button4 = Button(
         screen,
-        720 * scale,
-        624 * scale,
-        w,
-        h,
+        int(720 * scale),
+        int(624 * scale),
+        int(w),
+        int(h),
         image=play_image4,
-        onClick=lambda: play_clicked(screen,4),
+        onClick=lambda: play_clicked(screen, 4),
     )
     sound_button = Button(
         screen,
-        960 * scale,
-        864 * scale,
-        w,
-        h,
+        int(960 * scale),
+        int(864 * scale),
+        int(w),
+        int(h),
         image=sound_button_on,
-        onClick=lambda: 
+        onClick=lambda:
             toggle_sound(),
     )
     # Add cute little icon
@@ -161,11 +164,11 @@ if __name__ == "__main__":
     # Adds the board background image
 
     # Plays tetris music on repeat
-    music = pygame.mixer.music.load("Blokken.mp3")
+    pygame.mixer.music.load("Blokken.mp3")
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.1)
     music_on = True
-    
+
     RUNNING = True
     while RUNNING:
 
@@ -180,11 +183,10 @@ if __name__ == "__main__":
             # Closes the window if X is pressed
             if event.type == pygame.QUIT:
                 RUNNING = False
-                
-        
+
         screen.blit(start_image, (0, 0))
         if flash_on:
-            screen.blit(start_game_text, (380*scale,550*scale))
+            screen.blit(start_game_text, (380*scale, 550*scale))
         if score == -1:
             RUNNING = False
         if pixel_type == 1:
@@ -215,4 +217,3 @@ if __name__ == "__main__":
 
         pygame_widgets.update(events)
         pygame.display.update()
-
