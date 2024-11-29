@@ -1,6 +1,8 @@
-"""random is needed to shuffle the pieces to make them random
-    Time will be needed to shift the pieces over the board
-    pygame is our main game framework """
+""" import random: random is needed to shuffle the pieces to make them random
+    import time: Time will be needed to shift the pieces over the board
+    import pygame: pygame is our main game framework
+    import math: math is needed for some more complex calculations"""
+
 import random
 import time
 import pygame
@@ -22,6 +24,11 @@ UNIT = round(48 * scale)
 
 
 def load_pixel_color(pixel_path="images/Pixel.png"):
+    """
+    Creates the colors dictionary used for each of the pieces
+    :param pixel_path: (str) The file path to the 48x48 png being used for each square
+    :return colors: (dict) the dictionary that contains each of the already colored pixel images
+    """
     WHITE = pygame.image.load(pixel_path)
     w = WHITE.get_height()
     WHITE = pygame.transform.scale(WHITE, (w*scale, w*scale))
@@ -48,8 +55,10 @@ def load_pixel_color(pixel_path="images/Pixel.png"):
 
 def next_piece(piece_list):
     """
-        Determines the next piece to use. uses traditional tetris algorithm to prevent droughts:
-        Parameters: (none)
+        Determines the next piece to use. uses traditional tetris algorithm to prevent droughts.
+        :param piece_list: (list(str)) Contains the keys of pieces, that have not already been used, can be empty
+        :return piece: (str) The piece to be used next
+        :return piece_list: (list(str) Contains the keys of pieces, that have not already been used, can be empty
     """
     if not piece_list:
         piece_list = ["L", "T", "S", "Z", "I", "O", "J"]
@@ -62,10 +71,11 @@ def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT, colors=None):
         Takes a piece from next_piece or a piece from the user and generates the components
         at the desiRED locations for that piece. Can also get prompted with x,y to change the
         starting position of the home piece.
-        Parameters:
-        piece_name (str): one of these strings ["L", "T", "S", "Z", "I", "O", "J"]
-        x (int): the position in pixels of the x coordinate
-        y (int): the position in pixels of the y coordinate
+        :param piece_name: (str) one of these strings ["L", "T", "S", "Z", "I", "O", "J"] that describes which piece is currently being placed
+        :param x; (int) the position in pixels of the x coordinate
+        :param y: (int) the position in pixels of the y coordinate
+        :param colors: (dict) the dictionary that contains each of the already colored pixel images
+        :return: arr(arr(x, y, color)) The piece coordinates of the inputted piece name and it's color
     """
     RED = colors["RED"]
     ORANGE = colors["ORANGE"]
@@ -124,8 +134,8 @@ def generate_piece(piece_name="O", x=10 * UNIT, y=1 * UNIT, colors=None):
 def get_next_check(interval):
     """
         gets the next time that returns the time <interval> away from the current time.
-        Parameters:
-        interval (int): how many ms away we want the next check
+        :param interval: (int) how many ms away we want the next check
+        :return: (int) the next interval
     """
     interval /= 1000
     current_time = time.time()
@@ -135,8 +145,7 @@ def get_next_check(interval):
 def drop_piece(arr):
     """
         Moves the piece down 1 in the game board collision should be checked prior
-        Parameters:
-        arr (arr[arr[int]]): The current piece
+        :param arr: (arr[arr[int]]) The current piece
     """
     for i in arr:
         i[1] += UNIT
@@ -145,9 +154,8 @@ def drop_piece(arr):
 def move_piece(arr, command):
     """
         Moves the piece left or right 1 in the game board collision should be checked prior
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        command (string): right or left to determine direction
+        :param arr: (arr[arr[int]]) The current piece
+        :param command: (string) right or left to determine direction
     """
     if command == "right":
         for i in arr:
@@ -159,8 +167,8 @@ def move_piece(arr, command):
 
 def create_board():
     """
-        Creates an array for the game objects to be stoRED in
-        Parameters: (none)
+        Creates an array for the game objects to be stored in
+        :return: (arr[arr[int]]) The matrix containing the play board with the boards defining the play space
     """
     board = [[0 for _ in range(16)] for _ in range(20)]
     for i, _ in enumerate(board):
@@ -173,9 +181,9 @@ def create_board():
 def stop_piece(arr, board):
     """
         Adds the current piece to the board
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        board (arr[arr[int]]): The game board
+        :param arr: (arr[arr[int]]) The current piece
+        :param board: (arr[arr[int]]) The game board
+        :return: (arr[arr[int]]) The board after the piece is placed on the board
     """
     for i in arr:
         x, y = get_x_y(i)
@@ -184,12 +192,13 @@ def stop_piece(arr, board):
 
 
 def check_lines(board):
-    count = 0
     """
         checks for full lines, clears them, and moves above rows down
-        Parameters:
-        board (arr[arr[int]]): The game board
+        :param board: (arr[arr[int]]) The game board
+        :return: (arr[arr[int]]) The board after full lines have been cleared
+        :return: (int) The number of lines cleared
     """
+    count = 0
     # clear lines add points and totals lines cleared
     new_line = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
     # If the bottom row is empty all the rows have to be empty
@@ -220,9 +229,9 @@ def check_lines(board):
 def drop_collision_check(arr, board):
     """
         Checks to see if there is a block below or a border
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        board (arr[arr[int]]): The game board
+        :param arr: (arr[arr[int]]) The current piece
+        :param board: (arr[arr[int]]) The game board
+        :return: (bool) True if the piece cannot move down by 1, False if the piece can move down by 1
     """
     for i in arr:
         x, y = get_x_y(i)
@@ -234,9 +243,9 @@ def drop_collision_check(arr, board):
 def right_collision_check(arr, board):
     """
         Checks to see if there is a block to the right or a border
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        board (arr[arr[int]]): The game board
+        :param arr: (arr[arr[int]]) The current piece
+        :param board: (arr[arr[int]]) The game board
+        :return: (bool) True if the piece cannot move right by 1, False if the piece can move right by 1
     """
     for i in arr:
         x, y = get_x_y(i)
@@ -248,9 +257,9 @@ def right_collision_check(arr, board):
 def left_collision_check(arr, board):
     """
         Checks to see if there is a block to the left or a border
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        board (arr[arr[int]]): The game board
+        :param arr: (arr[arr[int]]) The current piece
+        :param board: (arr[arr[int]]) The game board
+        :return: (bool) True if the piece cannot move left by 1, False if the piece can move left by 1
     """
     for i in arr:
         x, y = get_x_y(i)
@@ -261,10 +270,10 @@ def left_collision_check(arr, board):
 
 def review_check(arr, board):
     """
-        Checks to see if the piece can rotate left without collision with border or other blocks
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        board (arr[arr[int]]): The game board
+        Checks to see if the piece can be placed where it is trying to be placed or if something is already there
+        :param arr: (arr[arr[int]]) The current piece
+        :param board: (arr[arr[int]]) The game board
+        :return: (bool) True if the piece cannot be placed, False if the piece can be placed
     """
     for i in arr:
         x, y = get_x_y(i)
@@ -280,10 +289,14 @@ def rotate(arr, direction, board, rotations, piece_name):
     """
         rotates the piece by doing reflections over y=x and y=-x respective to
         the direction does not care about collision
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        direction (string): clockwise or counterclockwise for direction
-        board (arr[arr[int]]): The game board
+        :param arr: (arr[arr[int]]) The current piece
+        :param direction: (string) clockwise or counterclockwise for direction
+        :param board: (arr[arr[int]]) The game board
+        :param rotations: (int) how many rotations the current piece can do
+        :param piece_name: (str) one of these strings ["L", "T", "S", "Z", "I", "O", "J"] that describes which piece is currently being placed
+        :return: (arr[arr[int]]) The Piece being placed with its new coordinates
+        :return: (int) How many rotations the piece did
+        :return: (bool) Was the piece rotated
     """
     # excludes the O piece
     if piece_name == "O":
@@ -538,8 +551,8 @@ def get_x_y(unit):
     """
         retrieves the x and y coordinate from the position on screen. this is where
         they are on the board array
-        Parameters:
-        unit (list[x(int),y(int),color]): the color is a pygame image that is displayed with a tint
+        :param unit: (list[x(int),y(int),color]) the color is a pygame image that is displayed with a tint
+        :return: (int), (int) The x and y coordinates of the piece in the game board matrix
     """
     x, y = int((unit[0] - 160*scale) / UNIT), int((unit[1]) / UNIT)
     return x, y
@@ -550,9 +563,8 @@ def display_piece(arr, display_screen):
         prints the game piece to the board this is separate from the board array and
         is not contained in the array
         this function displays the current piece over the board.
-        Parameters:
-        arr (arr[arr[int]]): The current piece
-        display_screen (pygame.surface): pygame screen
+        :param arr: (arr[arr[int]]) The current piece
+        :param display_screen: (pygame.surface) pygame screen
     """
     if arr:
         for i in arr:
@@ -562,9 +574,8 @@ def display_piece(arr, display_screen):
 def display_board(board, display_screen):
     """
         This function displays board on the screen object
-        Parameters:
-        board (arr[arr[int]]): board
-        display_screen (pygame.surface): pygame screen
+        :param board: (arr[arr[int]]) board
+        :param display_screen: (pygame.surface) pygame screen
     """
     for i in board:
         for j in i:
@@ -574,12 +585,13 @@ def display_board(board, display_screen):
 
 def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
     """updates score according to lines cleared, level and if it was a t_spin
-        Parameters:
-        _lines: int
-        _btb_tetris: bool
-        _score: int
-        _t_spin: bool
-        _level: int
+        :param _lines: (int) # of lines cleared
+        :param _btb_tetris: (bool) If there was a back-to-back tetris
+        :param _score: (int) What the current score is
+        :param _t_spin: (bool) If the last placement was a t-spin
+        :param _level: (int) What level the game is currently on
+        :return: (int) The player's score
+        :return: (bool) Was there a back-to-back tetris
     """
     if _t_spin:
         if _lines == 1:
@@ -607,6 +619,11 @@ def update_score(_lines, _btb_tetris, _score, _t_spin, _level):
 
 
 def update_difficulty(cleared_lines):
+    """
+    Changes difficulty/speed depending on how many lines have been cleared
+    :param cleared_lines: (int) Number of lines cleared
+    :return: (int) the difficulty
+    """
     check = math.floor(cleared_lines/10)
     match check:
         case 0:
@@ -642,6 +659,12 @@ def update_difficulty(cleared_lines):
 
 
 def t_spin_check(arr, board):
+    """
+    Checks to see if a t-spin occurred
+    :param arr: (arr[arr[int]]) The current piece
+    :param board: (arr[arr[int]]) The game board
+    :return: (bool) Was there a t-spin
+    """
     count = 0
     x, y = get_x_y(arr[0])
     if board[y+1][x+1] != 0:
@@ -657,6 +680,14 @@ def t_spin_check(arr, board):
 
 
 def get_shadow(arr, board, colors):
+    """
+    Creates a "shadow" of the piece currently being placed and puts it at the lowest possible point the block
+    can fall to
+    :param arr: (arr[arr[int]]) The current piece
+    :param board: (arr[arr[int]]) The game board
+    :param colors: (dict) the dictionary that contains each of the already colored pixel images
+    :return: (arr[arr[int]]) The shadow piece being "placed"
+    """
     placeholder = []
     for item in arr:
         x, y, surface = item
@@ -670,7 +701,12 @@ def get_shadow(arr, board, colors):
 
 
 def play_tetris(screen, pixel_type):
-
+    """
+    Run the game
+    :param screen: pygame screen the board is displayed on
+    :param pixel_type: (int) Indicates which 48x48 Pixel#.png is being used
+    :return: (int) The score the player ended the game with
+    """
     board_image = pygame.image.load("images/Background.png")
     w, h = board_image.get_width(), board_image.get_height()
     board_image = pygame.transform.scale(board_image, (w*scale, h*scale))

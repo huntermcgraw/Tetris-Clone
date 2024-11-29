@@ -40,6 +40,12 @@ music_on = True
 
 
 def play_clicked(play_screen, new_type):
+    """
+    Starts the game with the inputted pixel type
+    :param play_screen: The pygame object the screen is displayed on
+    :param new_type: (int) The number corresponding to the pixel#.png the user is going to use for the blocks
+    :return: (int) the score the player ended the game with
+    """
     global pixel_type
     global score
     if pixel_type == new_type:
@@ -50,6 +56,13 @@ def play_clicked(play_screen, new_type):
 
 
 def toggle_sound(button, button_on, button_off):
+    """
+    Mutes or unmutes the sound
+    :param button: The pygame button object that user interacts with
+    :param button_on: The pygame loaded image for sound being on
+    :param button_off: The pygame loaded image for sound being off
+    :return: (None)
+    """
     global music_on
     music_on = not music_on
     if music_on:
@@ -62,6 +75,10 @@ def toggle_sound(button, button_on, button_off):
 
 
 def get_high_score():
+    """
+    Records and returns the highest score the player has reached
+    :return: (int) The highest score the player reached
+    """
     with open("scores.csv", "r") as file:
         reader = csv.reader(file)
         new_high_score = next(reader)
