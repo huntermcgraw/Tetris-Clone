@@ -120,7 +120,8 @@ if __name__ == "__main__":
     play_image4 = pygame.image.load("images/Pixel4.png")
     sound_button_on = pygame.image.load("images/VolumeOn.png")
     sound_button_off = pygame.image.load("images/VolumeOff.png")
-
+    sound_button_on = pygame.transform.scale(sound_button_on, (w*scale*2, w*scale*2))
+    sound_button_off = pygame.transform.scale(sound_button_off, (w*scale*2, w*scale*2))
     w, h = play_image.get_width() * scale, play_image.get_height() * scale
     play_image = pygame.transform.scale(play_image, (w, h))
     play_image2 = pygame.transform.scale(play_image2, (w, h))
@@ -167,8 +168,8 @@ if __name__ == "__main__":
         screen,
         int(960 * scale),
         int(864 * scale),
-        int(sound_button_on.get_width()*scale),
-        int(sound_button_on.get_height()*scale),
+        int(sound_button_on.get_width()),
+        int(sound_button_on.get_height()),
         image=sound_button_on,
         onClick=lambda:
             toggle_sound(sound_button, sound_button_on, sound_button_off),
