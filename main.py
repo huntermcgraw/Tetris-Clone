@@ -126,7 +126,7 @@ if __name__ == "__main__":
     play_image2 = pygame.transform.scale(play_image2, (w, h))
     play_image3 = pygame.transform.scale(play_image3, (w, h))
     play_image4 = pygame.transform.scale(play_image4, (w, h))
-
+    print(scale)
     play_button = Button(
         screen,
         int(288 * scale),
@@ -165,8 +165,8 @@ if __name__ == "__main__":
     )
     sound_button = Button(
         screen,
-        int(960+16+4+2+1 * scale),
-        int(864 * scale),
+        int((960 + 24) * scale),
+        int((864 + 24) * scale),
         int(w),
         int(h),
         image=sound_button_on,
