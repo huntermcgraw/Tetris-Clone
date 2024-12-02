@@ -165,8 +165,8 @@ if __name__ == "__main__":
     )
     sound_button = Button(
         screen,
-        int((960) * scale),
-        int((864) * scale),
+        int(960 * scale),
+        int(864 * scale),
         int(sound_button_on.get_width()*scale),
         int(sound_button_on.get_height()*scale),
         image=sound_button_on,
