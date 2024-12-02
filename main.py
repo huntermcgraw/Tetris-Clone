@@ -118,8 +118,8 @@ if __name__ == "__main__":
     play_image2 = pygame.image.load("images/Pixel2.png")
     play_image3 = pygame.image.load("images/Pixel3.png")
     play_image4 = pygame.image.load("images/Pixel4.png")
-    sound_button_on = pygame.image.load("images/Settings.png")
-    sound_button_off = pygame.image.load("images/Pixel4.png")
+    sound_button_on = pygame.image.load("images/VolumeOn.png")
+    sound_button_off = pygame.image.load("images/VolumeOff.png")
 
     w, h = play_image.get_width() * scale, play_image.get_height() * scale
     play_image = pygame.transform.scale(play_image, (w, h))
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     )
     sound_button = Button(
         screen,
-        int(960 * scale),
+        int(960+16+4+2+1 * scale),
         int(864 * scale),
         int(w),
         int(h),
