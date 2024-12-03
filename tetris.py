@@ -10,15 +10,27 @@ import math
 
 # initialize pygame
 pygame.init()
-# dimensions of the images for the game background
+
 X_WIDTH = 1056
+"""
+Horizontal Width of the images for the game background
+"""
 Y_WIDTH = 960
-# gets the system information for scaling
+"""
+Vertical Width of the images for the game background
+"""
 info = pygame.display.Info()
-# ratio of screen to image
+"""
+The video display information for the user’s screen
+"""
 scale = (info.current_h-80)/Y_WIDTH
-# Adjusts the scaling to the nearest whole divisor of unit
+"""
+Used to scale the window to the user’s screen size, the ratio of screen to image
+"""
 UNIT = (48 * scale)
+"""
+The number of pixels between each grid.
+"""
 scale -= round(UNIT % 1, 8) / 48
 UNIT = round(48 * scale)
 

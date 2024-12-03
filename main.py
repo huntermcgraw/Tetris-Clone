@@ -10,33 +10,60 @@ import math
 # initialize pygame
 pygame.init()
 
-# dimensions of the images for the game background
 X_WIDTH = 1056
+"""
+Horizontal Width of the images for the game background
+"""
 Y_WIDTH = 960
-
-# gets the system information for scaling
+"""
+Vertical Width of the images for the game background
+"""
 info = pygame.display.Info()
-
+"""
+The video display information for the user’s screen
+"""
 screen_width = info.current_w
+"""
+The width of the user’s screen
+"""
 
 with open("scores.csv", "r") as csv_file:
     csv_reader = csv.reader(csv_file)
+    """
+    The reader for the high score file
+    """
     high_score = next(csv_reader)
+    """
+    The current high score, as read by csv_reader
+    """
 
 # ratio of screen to image
 scale = (info.current_h - 80) / Y_WIDTH
-temp = int((screen_width - X_WIDTH*scale) // 2)
-os.environ['SDL_VIDEO_WINDOW_POS'] = f"{temp},30"
-# Adjusts the scaling to the nearest whole divisor of unit
+"""
+Used to scale the window to the user’s screen size, the ratio of screen to image
+"""
+os.environ['SDL_VIDEO_WINDOW_POS'] = f"{int((screen_width - X_WIDTH*scale) // 2)},30"
 UNIT = 48 * scale
+"""
+Adjusts the scaling to the nearest whole divisor of unit
+"""
 scale -= round(UNIT % 1, 8) / 48
 UNIT = round(48 * scale)
 
 # scale = 1
 # unit = 48
 score = 0
+"""
+Store the player's most recent score
+"""
 pixel_type = 1
+"""
+Which Pixel#.png the user is playing with
+"""
 music_on = True
+"""
+Boolean if the music is on
+"""
 
 
 def play_clicked(play_screen, new_type):
