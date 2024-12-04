@@ -212,7 +212,7 @@ def check_lines(board):
     """
     count = 0
     # clear lines add points and totals lines cleared
-    new_line = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+    new_line = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1]
     # If the bottom row is empty all the rows have to be empty
     if board[18] == new_line:
         return board
