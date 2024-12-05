@@ -499,7 +499,7 @@ def rotate(arr, direction, board, rotations, piece_name):
             for i in arr:
                 i[0] += 1 * UNIT
     else:
-        if rotations == 1 or rotations == 2:
+        if rotations == 1 or rotations == 0:
             for i in arr:
                 i[0] += 1 * UNIT
         else:
