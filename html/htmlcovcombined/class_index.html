@@ -11,7 +11,7 @@
 <header>
     <div class="content">
         <h1>Coverage report:
-            <span class="pc_cov">80%</span>
+            <span class="pc_cov">89%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -23,6 +23,7 @@
                 <div class="keyhelp">
                     <p>
                         <kbd>f</kbd>
+                        <kbd>n</kbd>
                         <kbd>s</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
@@ -48,13 +49,13 @@
             </div>
         </form>
         <h2>
-                <a class="button current">Files</a>
+                <a class="button" href="index.html">Files</a>
                 <a class="button" href="function_index.html">Functions</a>
-                <a class="button" href="class_index.html">Classes</a>
+                <a class="button current">Classes</a>
         </h2>
         <p class="text">
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.8">coverage.py v7.6.8</a>,
-            created at 2024-11-28 12:47 -0500
+            created at 2024-12-04 22:08 -0500
         </p>
     </div>
 </header>
@@ -63,6 +64,7 @@
         <thead>
             <tr class="tablehead" title="Click to sort">
                 <th id="file" class="name left" aria-sort="none" data-shortcut="f">File<span class="arrows"></span></th>
+                <th id="region" class="name left" aria-sort="none" data-default-sort-order="ascending" data-shortcut="n">class<span class="arrows"></span></th>
                 <th id="statements" aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements<span class="arrows"></span></th>
                 <th id="missing" aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing<span class="arrows"></span></th>
                 <th id="excluded" aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded<span class="arrows"></span></th>
@@ -72,26 +74,77 @@
         <tbody>
             <tr class="region">
                 <td class="name left"><a href="main_py.html">main.py</a></td>
-                <td>128</td>
-                <td>11</td>
+                <td class="name left"><a href="main_py.html"><data value=''><span class='no-noun'>(no class)</span></data></a></td>
+                <td>141</td>
+                <td>5</td>
                 <td>0</td>
-                <td class="right" data-ratio="117 128">91%</td>
+                <td class="right" data-ratio="136 141">96%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="test_file_py.html#t4">test_file.py</a></td>
+                <td class="name left"><a href="test_file_py.html#t4"><data value='TestTSpinCheck'>TestTSpinCheck</data></a></td>
+                <td>6</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="6 6">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="test_file_py.html#t25">test_file.py</a></td>
+                <td class="name left"><a href="test_file_py.html#t25"><data value='TestUpdateScore'>TestUpdateScore</data></a></td>
+                <td>7</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="7 7">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="test_file_py.html#t43">test_file.py</a></td>
+                <td class="name left"><a href="test_file_py.html#t43"><data value='TestRotate'>TestRotate</data></a></td>
+                <td>48</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="48 48">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="test_file_py.html#t116">test_file.py</a></td>
+                <td class="name left"><a href="test_file_py.html#t116"><data value='TestDropCollision'>TestDropCollision</data></a></td>
+                <td>15</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="15 15">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="test_file_py.html#t139">test_file.py</a></td>
+                <td class="name left"><a href="test_file_py.html#t139"><data value='TestCheckLines'>TestCheckLines</data></a></td>
+                <td>24</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="24 24">100%</td>
+            </tr>
+            <tr class="region">
+                <td class="name left"><a href="test_file_py.html">test_file.py</a></td>
+                <td class="name left"><a href="test_file_py.html"><data value=''><span class='no-noun'>(no class)</span></data></a></td>
+                <td>30</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="30 30">100%</td>
             </tr>
             <tr class="region">
                 <td class="name left"><a href="tetris_py.html">tetris.py</a></td>
-                <td>624</td>
-                <td>139</td>
+                <td class="name left"><a href="tetris_py.html"><data value=''><span class='no-noun'>(no class)</span></data></a></td>
+                <td>628</td>
+                <td>96</td>
                 <td>0</td>
-                <td class="right" data-ratio="485 624">78%</td>
+                <td class="right" data-ratio="532 628">85%</td>
             </tr>
         </tbody>
         <tfoot>
             <tr class="total">
                 <td class="name left">Total</td>
-                <td>752</td>
-                <td>150</td>
+                <td class="name left">&nbsp;</td>
+                <td>899</td>
+                <td>101</td>
                 <td>0</td>
-                <td class="right" data-ratio="602 752">80%</td>
+                <td class="right" data-ratio="798 899">89%</td>
             </tr>
         </tfoot>
     </table>
@@ -103,12 +156,12 @@
     <div class="content">
         <p>
             <a class="nav" href="https://coverage.readthedocs.io/en/7.6.8">coverage.py v7.6.8</a>,
-            created at 2024-11-28 12:47 -0500
+            created at 2024-12-04 22:08 -0500
         </p>
     </div>
     <aside class="hidden">
-        <a id="prevFileLink" class="nav" href="tetris_py.html"></a>
-        <a id="nextFileLink" class="nav" href="main_py.html"></a>
+        <a id="prevFileLink" class="nav" href=""></a>
+        <a id="nextFileLink" class="nav" href=""></a>
         <button type="button" class="button_prev_file" data-shortcut="["></button>
         <button type="button" class="button_next_file" data-shortcut="]"></button>
         <button type="button" class="button_show_hide_help" data-shortcut="?"></button>
