@@ -826,7 +826,7 @@ def play_tetris(screen, pixel_type):
     held_piece_arr = None
     held_used = False
     current_piece_rotations = 0
-    cleared_lines = 300
+    cleared_lines = 0
     score = 0
     piece_stop_check = 0
     level = 1
