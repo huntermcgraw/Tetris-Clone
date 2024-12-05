@@ -657,17 +657,61 @@ def update_difficulty(cleared_lines):
         case 8:
             return check+1, 133.33, 800
         case 9:
-            return check+1, 100, 716.67
-        case 10 | 11 | 12:
-            return check+1, 83.33, 633.33
-        case 13 | 14 | 15:
-            return check+1, 66.67, 550
-        case 16 | 17 | 18:
-            return check+1, 50, 466.67
-        case 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28:
-            return check+1, 33.33, 383.33
+            return check+1, 100, 800
+        case 10:
+            return check+1, 83.33, 800
+        case 11:
+            return check+1, 66.67, 800
+        case 12:
+            return check+1, 50, 800
+        case 13:
+            return check+1, 33.33, 800
+        case 14:
+            return check+1, 16.67, 800
+        case 15:
+            return check+1, 9, 800
+        case 16:
+            return check+1, 2, 800
+        case 17:
+            return check+1, 2, 800
+        case 18:
+            return check+1, 1, 800
+        case 19:
+            return check+1, 1, 716.67
+        case 20:
+            return check+1, 1, 650
+        case 21:
+            return check+1, 1, 560
+        case 22:
+            return check+1, 1, 470
+        case 23:
+            return check+1, 1, 380
+        case 24:
+            return check+1, 1, 290
+        case 25:
+            return check+1, 1, 200
+        case 26:
+            return check+1, 1, 180
+        case 27:
+            return check+1, 1, 160
+        case 28:
+            return check+1, 1, 140
+        case 29:
+            return check+1, 1, 120
         case _:
-            return check+1, 16.67, 300
+            return check+1, 1, 1
+        
+        
+        # case 10 | 11 | 12:
+        #     return check+1, 83.33, 633.33
+        # case 13 | 14 | 15:
+        #     return check+1, 66.67, 550
+        # case 16 | 17 | 18:
+        #     return check+1, 50, 466.67
+        # case 19 | 20 | 21 | 22 | 23 | 24 | 25 | 26 | 27 | 28:
+        #     return check+1, 33.33, 383.33
+        # case _:
+        #     return check+1, 16.67, 300
 
 
 def t_spin_check(arr, board):
@@ -782,7 +826,7 @@ def play_tetris(screen, pixel_type):
     held_piece_arr = None
     held_used = False
     current_piece_rotations = 0
-    cleared_lines = 0
+    cleared_lines = 300
     score = 0
     piece_stop_check = 0
     level = 1
@@ -886,7 +930,12 @@ def play_tetris(screen, pixel_type):
                             held_piece_arr = generate_piece(piece_name=held_piece, x=2*UNIT, y=5*UNIT, colors=colors)
                         else:
                             held_piece_arr = generate_piece(piece_name=held_piece, x=int(2.5*UNIT), y=5*UNIT, colors=colors)
-
+                        if speed == 1:
+                    
+                            while not drop_collision_check(current_piece, game_board):
+                                drop_piece(current_piece)
+                                piece_stop_check = get_next_check(piece_stop_delay)
+                                piece_not_below = False
         if down_pressed:
             if Time > next_down_check:
                 if not drop_collision_check(current_piece, game_board):
@@ -957,15 +1006,25 @@ def play_tetris(screen, pixel_type):
                 # Create new piece
                 current_piece = generate_piece(piece_letter, colors=colors)
                 shadow = get_shadow(current_piece, game_board, colors)
-
-                # If no space for new piece end game
                 if drop_collision_check(current_piece, game_board):
                     return score
+                # If no space for new piece end game
+                if speed == 1:
+                    while not drop_collision_check(current_piece, game_board):
+                        drop_piece(current_piece)
+                        piece_stop_check = get_next_check(piece_stop_delay)
+                        piece_not_below = False
+                # spawn at bottom is piece speed is 1
         else:
             piece_not_below = True
         if Time > next_check and piece_not_below:
             drop_piece(current_piece)
             next_check = get_next_check(speed)
+            if speed == 1:
+                while not drop_collision_check(current_piece, game_board):
+                    drop_piece(current_piece)
+                    piece_stop_check = get_next_check(piece_stop_delay)
+                    piece_not_below = False
 
         # Display board
         screen.blit(board_image, (0, 0))
