@@ -1,3 +1,12 @@
+import os
+
+def resource_path(relative_path):
+    import sys
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 """ import random: random is needed to shuffle the pieces to make them random
     import time: Time will be needed to shift the pieces over the board
     import pygame: pygame is our main game framework
@@ -41,7 +50,7 @@ def load_pixel_color(pixel_path="images/Pixel.png"):
     :param pixel_path: (str) The file path to the 48x48 png being used for each square
     :return colors: (dict) the dictionary that contains each of the already colored pixel images
     """
-    WHITE = pygame.image.load(pixel_path)
+    WHITE = pygame.image.load(resource_path(pixel_path))
     w = WHITE.get_height()
     WHITE = pygame.transform.scale(WHITE, (w*scale, w*scale))
     colors = {
@@ -637,69 +646,68 @@ def update_difficulty(cleared_lines):
     :return: (int) the difficulty
     """
     check = math.floor(cleared_lines/10)
-    match check:
-        case 0:
-            return check+1, 800, 800
-        case 1:
-            return check+1, 716.67, 800
-        case 2:
-            return check+1, 633.33, 800
-        case 3:
-            return check+1, 550, 800
-        case 4:
-            return check+1, 466.67, 800
-        case 5:
-            return check+1, 383.33, 800
-        case 6:
-            return check+1, 300, 800
-        case 7:
-            return check+1, 216.67, 800
-        case 8:
-            return check+1, 133.33, 800
-        case 9:
-            return check+1, 100, 800
-        case 10:
-            return check+1, 83.33, 800
-        case 11:
-            return check+1, 66.67, 800
-        case 12:
-            return check+1, 50, 800
-        case 13:
-            return check+1, 33.33, 800
-        case 14:
-            return check+1, 16.67, 800
-        case 15:
-            return check+1, 9, 800
-        case 16:
-            return check+1, 2, 800
-        case 17:
-            return check+1, 2, 800
-        case 18:
-            return check+1, 1, 800
-        case 19:
-            return check+1, 1, 716.67
-        case 20:
-            return check+1, 1, 650
-        case 21:
-            return check+1, 1, 560
-        case 22:
-            return check+1, 1, 470
-        case 23:
-            return check+1, 1, 380
-        case 24:
-            return check+1, 1, 290
-        case 25:
-            return check+1, 1, 200
-        case 26:
-            return check+1, 1, 180
-        case 27:
-            return check+1, 1, 160
-        case 28:
-            return check+1, 1, 140
-        case 29:
-            return check+1, 1, 120
-        case _:
-            return check+1, 1, 1
+    if check == 0:
+        return check+1, 800, 800
+    elif check == 1:
+        return check+1, 716.67, 800
+    elif check == 2:
+        return check+1, 633.33, 800
+    elif check == 3:
+        return check+1, 550, 800
+    elif check == 4:
+        return check+1, 466.67, 800
+    elif check == 5:
+        return check+1, 383.33, 800
+    elif check == 6:
+        return check+1, 300, 800
+    elif check == 7:
+        return check+1, 216.67, 800
+    elif check == 8:
+        return check+1, 133.33, 800
+    elif check == 9:
+        return check+1, 100, 800
+    elif check == 10:
+        return check+1, 83.33, 800
+    elif check == 11:
+        return check+1, 66.67, 800
+    elif check == 12:
+        return check+1, 50, 800
+    elif check == 13:
+        return check+1, 33.33, 800
+    elif check == 14:
+        return check+1, 16.67, 800
+    elif check == 15:
+        return check+1, 9, 800
+    elif check == 16:
+        return check+1, 2, 800
+    elif check == 17:
+        return check+1, 2, 800
+    elif check == 18:
+        return check+1, 1, 800
+    elif check == 19:
+        return check+1, 1, 716.67
+    elif check == 20:
+        return check+1, 1, 650
+    elif check == 21:
+        return check+1, 1, 560
+    elif check == 22:
+        return check+1, 1, 470
+    elif check == 23:
+        return check+1, 1, 380
+    elif check == 24:
+        return check+1, 1, 290
+    elif check == 25:
+        return check+1, 1, 200
+    elif check == 26:
+        return check+1, 1, 180
+    elif check == 27:
+        return check+1, 1, 160
+    elif check == 28:
+        return check+1, 1, 140
+    elif check == 29:
+        return check+1, 1, 120
+    else:
+        return check+1, 1, 1
         
         
         # case 10 | 11 | 12:
@@ -763,7 +771,7 @@ def play_tetris(screen, pixel_type):
     :param pixel_type: (int) Indicates which 48x48 Pixel#.png is being used
     :return: (int) The score the player ended the game with
     """
-    board_image = pygame.image.load("images/Background.png")
+    board_image = pygame.image.load(resource_path("images/Background.png"))
     w, h = board_image.get_width(), board_image.get_height()
     board_image = pygame.transform.scale(board_image, (w*scale, h*scale))
     # Set title
@@ -772,7 +780,7 @@ def play_tetris(screen, pixel_type):
     screen.blit(board_image, (0, 0))
 
     # Add cute little icon
-    icon = pygame.image.load('images/icon.png')
+    icon = pygame.image.load(resource_path('images/icon.png'))
     pygame.display.set_icon(icon)
     # representation of board for background logic 0 is
     # empty 1 is boarder and lists are the tetris blocks
@@ -812,7 +820,7 @@ def play_tetris(screen, pixel_type):
         pixel = "images/Pixel4.png"
 
     # color the path selected and return the color dictionary
-    colors = load_pixel_color(pixel)
+    colors = load_pixel_color(resource_path(pixel))
 
     # generate the next piece in the desired location
     if future_piece == "O" or future_piece == "I":
@@ -836,7 +844,7 @@ def play_tetris(screen, pixel_type):
     last_move_rotation = False
 
     # Create all visual text and fields
-    font = pygame.font.Font('font.ttf', size=round(scale*40))
+    font = pygame.font.Font(resource_path('font.ttf'), size=round(scale*40))
     WHITE = (255, 255, 255)
     score_header = font.render(f"Score:", True, WHITE)
     score_text = font.render(f"{score}", True, WHITE)

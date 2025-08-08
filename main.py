@@ -7,6 +7,7 @@ from pygame_widgets.button import Button
 import os
 import math
 
+
 # initialize pygame
 pygame.init()
 
@@ -27,7 +28,17 @@ screen_width = info.current_w
 The width of the user’s screen
 """
 
-with open("scores.csv", "r") as csv_file:
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    import sys
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+with open(resource_path("scores.csv"), "r") as csv_file:
     csv_reader = csv.reader(csv_file)
     """
     The reader for the high score file
@@ -106,12 +117,12 @@ def get_high_score():
     Records and returns the highest score the player has reached
     :return: (int) The highest score the player reached
     """
-    with open("scores.csv", "r") as file:
+    with open(resource_path("scores.csv"), "r") as file:
         reader = csv.reader(file)
         new_high_score = next(reader)
 
     if score > int(new_high_score[0]):
-        with open("scores.csv", "w") as file:
+        with open(resource_path("scores.csv"), "w") as file:
             csv_writer = csv.writer(file)
             csv_writer.writerow([score])
 
@@ -125,9 +136,9 @@ if __name__ == "__main__":
     flash_timer = 0
     flash_delay = 500
     screen = pygame.display.set_mode((X_WIDTH * scale, Y_WIDTH * scale))
-    start_image = pygame.image.load("images/StartScreen.png")
-    game_over_image = pygame.image.load("images/GameOver.png")
-    font = pygame.font.Font('font.ttf', size=round(scale*40))
+    start_image = pygame.image.load(resource_path("images/StartScreen.png"))
+    game_over_image = pygame.image.load(resource_path("images/GameOver.png"))
+    font = pygame.font.Font(resource_path('font.ttf'), size=round(scale*40))
     start_game_text = font.render("Press a block to play", True, (255, 255, 255))
     score = int(high_score[0])
     high_score_text = font.render(f"HIGH SCORE: {score}", True, (255, 255, 255))
@@ -137,25 +148,24 @@ if __name__ == "__main__":
     start_image = pygame.transform.scale(
         start_image, (X_WIDTH * scale, Y_WIDTH * scale)
     )
-    outline = pygame.image.load("images/Pixel.png")
+    outline = pygame.image.load(resource_path("images/Pixel.png"))
     outline.fill((0, 255, 0), special_flags=pygame.BLEND_MULT)
     w = outline.get_height()
     outline = pygame.transform.scale(outline, (w*scale*1.24, w*scale*1.24))
-    play_image = pygame.image.load("images/Pixel.png")
+    play_image = pygame.image.load(resource_path("images/Pixel.png"))
     play_image.fill((255, 0, 0), special_flags=pygame.BLEND_MULT)
-    play_image2 = pygame.image.load("images/Pixel2.png")
+    play_image2 = pygame.image.load(resource_path("images/Pixel2.png"))
     play_image2.fill((0, 255, 0), special_flags=pygame.BLEND_MULT)
-    play_image3 = pygame.image.load("images/Pixel3.png")
+    play_image3 = pygame.image.load(resource_path("images/Pixel3.png"))
     play_image3.fill((255, 255, 0), special_flags=pygame.BLEND_MULT)
-    play_image4 = pygame.image.load("images/Pixel4.png")
+    play_image4 = pygame.image.load(resource_path("images/Pixel4.png"))
     play_image4.fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
-    sound_button_on = pygame.image.load("images/VolumeOn.png")
-    sound_button_off = pygame.image.load("images/VolumeOff.png")
+    sound_button_on = pygame.image.load(resource_path("images/VolumeOn.png"))
+    sound_button_off = pygame.image.load(resource_path("images/VolumeOff.png"))
     sound_button_on = pygame.transform.scale(sound_button_on, (w*scale*2, w*scale*2))
     sound_button_off = pygame.transform.scale(sound_button_off, (w*scale*2, w*scale*2))
     w, h = play_image.get_width() * scale, play_image.get_height() * scale
     play_image = pygame.transform.scale(play_image, (w, h))
-    
     play_image2 = pygame.transform.scale(play_image2, (w, h))
     play_image3 = pygame.transform.scale(play_image3, (w, h))
     play_image4 = pygame.transform.scale(play_image4, (w, h))
@@ -207,14 +217,14 @@ if __name__ == "__main__":
             toggle_sound(sound_button, sound_button_on, sound_button_off),
     )
     # Add cute little icon
-    icon = pygame.image.load("images/icon.png")
+    icon = pygame.image.load(resource_path("images/icon.png"))
     pygame.display.set_icon(icon)
     # Set title
     pygame.display.set_caption("Tetris")
     # Adds the board background image
 
     # Plays tetris music on repeat
-    pygame.mixer.music.load("Blokken.mp3")
+    pygame.mixer.music.load(resource_path("Blokken.mp3"))
     pygame.mixer.music.play(-1)
     pygame.mixer.music.set_volume(0.1)
     music_on = True
