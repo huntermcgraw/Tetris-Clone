@@ -130,7 +130,7 @@ if __name__ == "__main__":
     font = pygame.font.Font('font.ttf', size=round(scale*40))
     start_game_text = font.render("Press a block to play", True, (255, 255, 255))
     score = int(high_score[0])
-    high_score_text = font.render(f"HIGH: {score}", True, (255, 255, 255))
+    high_score_text = font.render(f"HIGH SCORE: {score}", True, (255, 255, 255))
     game_over_image = pygame.transform.scale(
         game_over_image, (X_WIDTH * scale, Y_WIDTH * scale)
     )
@@ -142,15 +142,20 @@ if __name__ == "__main__":
     w = outline.get_height()
     outline = pygame.transform.scale(outline, (w*scale*1.24, w*scale*1.24))
     play_image = pygame.image.load("images/Pixel.png")
+    play_image.fill((255, 0, 0), special_flags=pygame.BLEND_MULT)
     play_image2 = pygame.image.load("images/Pixel2.png")
+    play_image2.fill((0, 255, 0), special_flags=pygame.BLEND_MULT)
     play_image3 = pygame.image.load("images/Pixel3.png")
+    play_image3.fill((255, 255, 0), special_flags=pygame.BLEND_MULT)
     play_image4 = pygame.image.load("images/Pixel4.png")
+    play_image4.fill((0, 0, 255), special_flags=pygame.BLEND_MULT)
     sound_button_on = pygame.image.load("images/VolumeOn.png")
     sound_button_off = pygame.image.load("images/VolumeOff.png")
     sound_button_on = pygame.transform.scale(sound_button_on, (w*scale*2, w*scale*2))
     sound_button_off = pygame.transform.scale(sound_button_off, (w*scale*2, w*scale*2))
     w, h = play_image.get_width() * scale, play_image.get_height() * scale
     play_image = pygame.transform.scale(play_image, (w, h))
+    
     play_image2 = pygame.transform.scale(play_image2, (w, h))
     play_image3 = pygame.transform.scale(play_image3, (w, h))
     play_image4 = pygame.transform.scale(play_image4, (w, h))
@@ -246,7 +251,7 @@ if __name__ == "__main__":
         high_score = get_high_score()
         if score > high_score:
             high_score = score
-        high_score_text = font.render(f"HIGH: {high_score}", True, (255, 255, 255))
+        high_score_text = font.render(f"HIGH SCORE: {high_score}", True, (255, 255, 255))
         if high_score > 999999:
             high_score_x = 410 * scale - 5 * scale
         elif high_score > 99999:
@@ -258,7 +263,7 @@ if __name__ == "__main__":
         else:
             high_score_x = 445 * scale - 5 * scale
 
-        screen.blit(high_score_text, (scale*475 - scale*int((math.log10(high_score + 1)) * 6), 724 * scale - 5 * scale))
+        screen.blit(high_score_text, (scale*419 - scale*int((math.log10(high_score + 1)) * 6), 724 * scale - 5 * scale))
 
         pygame_widgets.update(events)
         pygame.display.update()
